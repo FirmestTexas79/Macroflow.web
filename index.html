@@ -1,1264 +1,486 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Makroflow — Tvůj kapesní RPG trenér výživy</title>
-    
-    <meta name="description" content="Makroflow kombinuje precizní sledování maker s gamifikací. Chovej Pokémony za odměnu za svou disciplínu. Projekt diplomové práce Maťašovský Samuel.">
-    <meta property="og:title" content="Makroflow — Více než kalorické tabulky">
-    <meta property="og:description" content="Sleduj makra, plň ranní rituály a sbírej vzácné Pokémony.">
-    <meta property="og:type" content="website">
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💧</text></svg>">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        /* -----------------------------------------------------------
-           1. CSS RESET & PROMĚNNÉ (Definice tvých barev z XML)
-           ----------------------------------------------------------- */
-        :root {
-            /* Barvy přesně podle colors.xml */
-            --color-brand-primary: #606C38;
-            --color-brand-dark: #283618;
-            --color-brand-cream: #FEFAE0;
-            --color-brand-accent-warm: #DDA15E;
-            --color-brand-accent-deep: #BC6C25;
-            
-            /* Pomocné odstíny pro nadýchaný efekt */
-            --color-bg-pure: #FFFFFF;
-            --color-bg-cream-soft: #FFFDF5;
-            --color-text-main: #1C2612; /* Mírně zjemněná brand_dark */
-            --color-text-sub: #455A2D;  /* brand_dark_light z xml */
-            --color-divider: rgba(40, 54, 24, 0.06);
-            --color-shadow: rgba(40, 54, 24, 0.03);
-
-            /* Konstrukční proměnné */
-            --container-width: 1200px;
-            --section-spacing-desktop: 180px;
-            --section-spacing-mobile: 100px;
-            --ease-smooth: cubic-bezier(0.65, 0, 0.35, 1);
-        }
-
-        /* Základní reset */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--color-brand-cream);
-            color: var(--color-text-main);
-            overflow-x: hidden;
-            font-weight: 400;
-        }
-
-        /* -----------------------------------------------------------
-           2. TYPOGRAFIE (Obří, nadýchané nadpisy jako u AirPods Max)
-           ----------------------------------------------------------- */
-        h1, h2, h3, h4 {
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 1.1;
-            color: var(--color-brand-dark);
-        }
-
-        h1 {
-            font-size: 6rem; /* Obří nadpis */
-            text-transform: leading;
-        }
-
-        h2 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-        }
-
-        h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.15rem;
-            font-weight: 400;
-            line-height: 1.7;
-            color: var(--color-text-sub);
-            margin-bottom: 20px;
-        }
-
-        /* Zvýrazněný text */
-        .text-highlight {
-            color: var(--color-brand-accent-deep);
-            font-weight: 600;
-        }
-
-        /* -----------------------------------------------------------
-           3. KOMPONENTY (Tlačítka, Karty, Společné prvky)
-           ----------------------------------------------------------- */
-        
-        .container {
-            width: 90%;
-            max-width: var(--container-width);
-            margin: 0 auto;
-            position: relative;
-        }
-
-        /* Hlavní tlačítko CTA (Nadýchaný stín) */
-        .btn {
-            display: inline-block;
-            padding: 18px 40px;
-            background-color: var(--color-brand-accent-warm);
-            color: white;
-            text-decoration: none;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: -0.01em;
-            transition: all 0.4s var(--ease-smooth);
-            box-shadow: 0 10px 30px rgba(221, 161, 94, 0.3);
-            border: 2px solid transparent;
-        }
-
-        .btn:hover {
-            transform: translateY(-4px) scale(1.02);
-            background-color: var(--color-brand-accent-deep);
-            box-shadow: 0 15px 40px rgba(188, 108, 37, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(-1px);
-        }
-
-        /* Sekundární tlačítko */
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--color-brand-dark);
-            border: 2px solid rgba(40, 54, 24, 0.1);
-            box-shadow: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(40, 54, 24, 0.03);
-            border-color: rgba(40, 54, 24, 0.2);
-            box-shadow: none;
-            color: var(--color-brand-dark);
-        }
-
-        /* Bílá nadýchaná karta (Základ pro design) */
-        .card {
-            background-color: var(--color-bg-pure);
-            border-radius: 32px;
-            padding: 60px;
-            box-shadow: 0 20px 60px var(--color-shadow);
-            border: 1px solid rgba(40, 54, 24, 0.01);
-            transition: transform 0.5s var(--ease-smooth), box-shadow 0.5s var(--ease-smooth);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 80px rgba(40, 54, 24, 0.05);
-        }
-
-        /* Sekce spacing */
-        section {
-            padding: var(--section-spacing-desktop) 0;
-            position: relative;
-        }
-
-        /* -----------------------------------------------------------
-           4. NAVIGACE (Neviditelná, čistá, jako na obrázku)
-           ----------------------------------------------------------- */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background-color: rgba(254, 250, 224, 0.92); /* Krémová s průhledností */
-            backdrop-filter: blur(10px); /* Rozmazání pozadí */
-            -webkit-backdrop-filter: blur(10px);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        /* Skrytí navigace při scrollu dolů (Moderní efekt) */
-        nav.nav-hidden {
-            transform: translateY(-100%);
-        }
-
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--color-brand-dark);
-            text-decoration: none;
-            letter-spacing: -0.05em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-dot {
-            width: 12px;
-            height: 12px;
-            background-color: var(--color-brand-primary);
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 35px;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--color-brand-dark);
-            font-weight: 500;
-            font-size: 1rem;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        /* Nadýchaný hover efekt na linkách */
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background-color: var(--color-brand-accent-warm);
-            transition: all 0.3s var(--ease-smooth);
-            transform: translateX(-50%);
-        }
-
-        .nav-links a:hover {
-            color: var(--color-brand-primary);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Tlačítko v navigaci */
-        .nav-links .btn-nav {
-            padding: 10px 24px;
-            font-size: 0.9rem;
-            box-shadow: 0 5px 15px rgba(221, 161, 94, 0.2);
-        }
-
-        /* Mobilní menu hamburger */
-        .menu-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            cursor: pointer;
-            z-index: 1100;
-        }
-
-        .menu-toggle span {
-            width: 30px;
-            height: 3px;
-            background-color: var(--color-brand-dark);
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        /* -----------------------------------------------------------
-           5. HERO SEKCE (Čistá inspirace tvým obrázkem)
-           ----------------------------------------------------------- */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 150px; /* Kvůli fixní navigaci */
-            background: radial-gradient(circle at 70% 30%, #FFFFFF 0%, var(--color-brand-cream) 70%);
-            text-align: center;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Obří statický text na pozadí (Trend, viz obrázek) */
-        .hero-bg-text {
-            position: absolute;
-            font-size: 25vw; /* Obří velikost podle šířky okna */
-            font-weight: 900;
-            color: rgba(96, 108, 56, 0.03); /* Velmi jemná brand_primary */
-            letter-spacing: -0.06em;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        .hero-tagline {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--color-brand-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: 20px;
-            display: inline-block;
-            background-color: rgba(96, 108, 56, 0.05);
-            padding: 8px 20px;
-            border-radius: 20px;
-        }
-
-        .hero h1 {
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-        }
-
-        .hero-subtitle {
-            font-size: 1.5rem;
-            max-width: 650px;
-            margin: 0 auto 50px auto;
-            color: var(--color-text-sub);
-            font-weight: 300;
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        /* Představa ústředního bodu (místo sluchátek tvé logo/telefon) */
-        .hero-phone-mockup {
-            width: 300px;
-            height: 600px;
-            background-color: #f0f0f0;
-            border-radius: 40px;
-            margin: 80px auto -200px auto; /* Vyčuhuje do další sekce */
-            box-shadow: 0 50px 100px rgba(40, 54, 24, 0.1);
-            border: 14px solid #1a1a1a;
-            position: relative;
-            z-index: 20;
-            overflow: hidden;
-        }
-
-        /* Imitace vnitřku aplikace */
-        .hero-phone-content {
-            width: 100%;
-            height: 100%;
-            background-color: var(--color-brand-cream);
-            padding: 20px;
-            text-align: left;
-        }
-        
-        .hero-phone-header {
-            font-weight: 800;
-            color: var(--color-brand-dark);
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .hero-phone-card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-size: 0.8rem;
-            color: var(--color-text-sub);
-        }
-
-        /* -----------------------------------------------------------
-           6. SEKCE FUNKCE (Nadýchaný grid)
-           ----------------------------------------------------------- */
-        .features-intro {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 100px auto;
-            padding-top: 150px; /* Kvůli vyčuhujícímu telefonu */
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-        }
-
-        .feature-card {
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 30px;
-            display: inline-block;
-        }
-
-        .feature-card p {
-            font-size: 1.05rem;
-            margin-bottom: 0;
-            flex-grow: 1;
-        }
-
-        /* -----------------------------------------------------------
-           7. SEKCE "MINDSET" (Vizuální předělová sekce)
-           ----------------------------------------------------------- */
-        .mindset {
-            background-color: var(--color-brand-dark);
-            color: var(--color-brand-cream);
-            text-align: center;
-        }
-
-        .mindset h2 {
-            color: var(--color-brand-cream);
-            max-width: 800px;
-            margin: 0 auto 30px auto;
-        }
-
-        .mindset p {
-            color: rgba(254, 250, 224, 0.8);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* -----------------------------------------------------------
-           8. SEKCE POKÉMONI (Vlastní "SECRET" mechaniky)
-           ----------------------------------------------------------- */
-        .pokemons {
-            background-color: var(--color-bg-cream-soft);
-        }
-
-        .pokemon-layout {
-            display: flex;
-            align-items: center;
-            gap: 80px;
-        }
-
-        .pokemon-text {
-            flex: 1;
-        }
-
-        .pokemon-visual {
-            flex: 1;
-            position: relative;
-        }
-
-        /* Nadýchaný box pro vizuál */
-        .pokemon-box {
-            width: 100%;
-            height: 450px;
-            background-color: white;
-            border-radius: 32px;
-            box-shadow: 0 30px 70px var(--color-shadow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10rem;
-            position: relative;
-            border: 2px solid var(--color-divider);
-        }
-
-        /* Secret tag */
-        .secret-tag {
-            position: absolute;
-            top: -15px;
-            right: 30px;
-            background-color: var(--color-brand-accent-deep);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 0 10px 20px rgba(188, 108, 37, 0.2);
-        }
-
-        /* Interaktivní odhalení (JS) */
-        .secret-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--color-brand-primary);
-            border-radius: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--color-brand-cream);
-            cursor: pointer;
-            transition: all 0.5s var(--ease-smooth);
-            z-index: 30;
-        }
-
-        .secret-overlay:hover {
-            background-color: var(--color-brand-dark);
-        }
-
-        .secret-overlay h3 {
-            color: var(--color-brand-cream);
-            margin-bottom: 10px;
-        }
-
-        .secret-overlay p {
-            color: rgba(254, 250, 224, 0.9);
-            font-size: 1rem;
-        }
-
-        /* Stav po odhalení (přidáno JS) */
-        .pokemon-box.revealed .secret-overlay {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.1);
-        }
-
-        .pokemon-list {
-            list-style: none;
-            margin-top: 30px;
-        }
-
-        .pokemon-list li {
-            font-size: 1.1rem;
-            color: var(--color-text-sub);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .pokemon-list li::before {
-            content: '✓';
-            color: var(--color-brand-accent-warm);
-            font-weight: 700;
-        }
-
-        /* -----------------------------------------------------------
-           9. SEKCE FORMULÁŘ (Beta testování přes Formspree)
-           ----------------------------------------------------------- */
-        .join {
-            background-color: var(--color-bg-pure);
-        }
-
-        .join-card {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .join-card h2 {
-            margin-bottom: 20px;
-        }
-
-        .join-card .subtitle {
-            max-width: 500px;
-            margin: 0 auto 50px auto;
-        }
-
-        /* Styling formuláře */
-        .beta-form {
-            text-align: left;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .form-group-full {
-            grid-column: span 2;
-        }
-
-        label {
-            font-weight: 600;
-            color: var(--color-brand-dark);
-            font-size: 0.95rem;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 18px 25px;
-            border: 2px solid var(--color-brand-cream);
-            background-color: var(--color-brand-cream);
-            border-radius: 16px;
-            font-size: 1rem;
-            font-family: inherit;
-            color: var(--color-brand-dark);
-            transition: all 0.3s ease;
-        }
-
-        /* Focus efekt v brand barvě */
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--color-brand-accent-warm);
-            background-color: white;
-            box-shadow: 0 10px 30px rgba(221, 161, 94, 0.08);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .form-submit-row {
-            grid-column: span 2;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .form-submit-row .btn {
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        /* -----------------------------------------------------------
-           10. PATIČKA & PRIVACY POLICY (Zákonná nutnost)
-           ----------------------------------------------------------- */
-        footer {
-            padding: 100px 0 50px 0;
-            background-color: var(--color-bg-cream-soft);
-            color: var(--color-text-sub);
-            font-size: 1rem;
-            border-top: 1px solid var(--color-divider);
-        }
-
-        .footer-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 50px;
-            margin-bottom: 80px;
-        }
-
-        .footer-logo-section h3 {
-            margin-bottom: 15px;
-        }
-
-        .footer-logo-section p {
-            font-size: 1rem;
-            max-width: 300px;
-        }
-
-        .footer-links h4 {
-            font-size: 1.1rem;
-            color: var(--color-brand-primary);
-            margin-bottom: 20px;
-        }
-
-        .footer-links ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .footer-links a {
-            text-decoration: none;
-            color: var(--color-text-sub);
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--color-brand-accent-deep);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 40px;
-            border-top: 1px solid var(--color-divider);
-            font-size: 0.9rem;
-            color: rgba(69, 90, 45, 0.7);
-        }
-
-        /* --- 📝 PRIVACY POLICY OVERLAY (Modal) --- */
-        .policy-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(40, 54, 24, 0.5); /* Zatmavení */
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s var(--ease-smooth);
-        }
-
-        .policy-modal.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .policy-content {
-            background-color: white;
-            width: 90%;
-            max-width: 800px;
-            height: 80%;
-            border-radius: 32px;
-            padding: 60px;
-            position: relative;
-            overflow-y: auto; /* Scrollování textu */
-            box-shadow: 0 50px 100px rgba(0,0,0,0.2);
-            transform: translateY(30px);
-            transition: transform 0.5s var(--ease-smooth);
-        }
-
-        .policy-modal.open .policy-content {
-            transform: translateY(0);
-        }
-
-        .close-policy {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: var(--color-brand-cream);
-            border: none;
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            color: var(--color-brand-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s ease;
-        }
-
-        .close-policy:hover {
-            background-color: rgba(221, 161, 94, 0.2);
-        }
-
-        .policy-content h2 {
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-        }
-
-        .policy-text h3 {
-            margin-top: 30px;
-            margin-bottom: 10px;
-            color: var(--color-brand-primary);
-        }
-
-        .policy-text p, .policy-text ul {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            color: var(--color-text-sub);
-        }
-        
-        .policy-text ul {
-            margin-left: 20px;
-        }
-
-        /* -----------------------------------------------------------
-           11. RESPONSIVITA (Aby to sedělo na všechny telefony)
-           ----------------------------------------------------------- */
-        
-        @media (max-width: 1100px) {
-        :root {
-        --section-spacing-desktop: 140px;
-            }
-        h1 { 
-            font-size: 5rem; 
-            }
-        }
-
-        @media (max-width: 900px) {
-            h1 { font-size: 4rem; }
-            h2 { font-size: 2.8rem; }
-            
-            .hero-btns { flex-direction: column; gap: 10px; }
-            
-            .features-grid { grid-template-columns: 1fr; gap: 30px; }
-            
-            .pokemon-layout { flex-direction: column; gap: 50px; }
-            
-            .beta-form { grid-template-columns: 1fr; }
-            .form-group-full { grid-column: span 1; }
-            .form-submit-row { grid-column: span 1; }
-
-            .footer-layout { grid-template-columns: 1fr; gap: 40px; text-align: center; }
-            .footer-logo-section p { margin: 0 auto; }
-            
-            .card { padding: 40px; }
-            .policy-content { padding: 40px; }
-        }
-
-        @media (max-width: 768px) {
-            /* Mobilní navigace */
-            .nav-links {
-                position: absolute;
-                top: 100px;
-                left: 0;
-                width: 100%;
-                background-color: white;
-                flex-direction: column;
-                padding: 40px;
-                gap: 25px;
-                box-shadow: 0 20px 40px var(--color-shadow);
-                opacity: 0;
-                pointer-events: none;
-                transform: translateY(-10px);
-                transition: all 0.4s var(--ease-smooth);
-            }
-
-            .nav-links.mobile-open {
-                opacity: 1;
-                pointer-events: auto;
-                transform: translateY(0);
-            }
-
-            .menu-toggle { display: flex; }
-            
-            h1 { font-size: 3.2rem; }
-            h2 { font-size: 2.2rem; }
-            
-            :root {
-        --section-spacing-mobile: 80px;
-    }
-            section { padding: var(--section-spacing-mobile) 0; }
-            
-            .hero { padding-top: 120px; }
-            .hero-bg-text { font-size: 35vw; }
-            
-            .pokemon-box { height: 300px; font-size: 7rem; }
-        }
-
-        /* -----------------------------------------------------------
-           💧 LOGO ANIMACE (PRO LOGOTYP SEKCI)
-           ----------------------------------------------------------- */
-        .logo-wrapper {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 30px auto;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: logoFloat 6s ease-in-out infinite;
-        }
-
-        .logo-svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 10px 20px var(--color-shadow));
-        }
-
-        .logo-path {
-            fill: var(--color-brand-primary);
-        }
-
-        .logo-path-flow {
-            fill: var(--color-brand-accent-warm);
-        }
-
-        /* Nadýchaná plovoucí animace */
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0) rotateY(0deg); }
-            50% { transform: translateY(-15px) rotateY(180deg); }
-        }
-
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makroflow</title>
+<meta name="description" content="Fitness deník, který z tvých maker, kroků a tréninků dělá pixelovou hru. Sbírej Makromony a sleduj jejich vývoj.">
+<meta property="og:title" content="Makroflow: každý tvůj krok probouzí Makromona">
+<meta property="og:description" content="Makra, kroky a tréninky jako RPG. Stáhni si Makroflow z Google Play.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="a/m12.webp">
+<meta name="theme-color" content="#141d0c">
+<link rel="icon" href="a/favicon.png">
+<link rel="preload" href="a/jersey_15.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+@font-face{font-family:"Jersey 15";src:url(a/jersey_15.ttf) format("truetype");font-display:swap}
+:root{
+  /* layout: hero split, wood tester panel, scroll-pinned map walk, dex grid, bento */
+  /* barvy z aplikace (res/values/colors.xml) */
+  --night:#121a0b; --forest:#1b2711; --moss:#283618; --olive:#606C38; --leaf:#8C9C5B;
+  --cream:#FEFAE0; --muted:#cfcaa6; --accent:#E9B072; --ember:#BC6C25;
+  --wood:#7a5232; --wood-hi:#a07352; --wood-lo:#4a2f1a; --ink:#1a1208;
+  --px:4px; --max:1240px;
+  --display:"Jersey 15", ui-monospace, monospace;
+  --body:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--night);color:var(--cream);font:17px/1.6 var(--body);overflow-x:hidden}
+img{display:block;max-width:100%;image-rendering:pixelated}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+h1,h2,h3,.display{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:1}
+h2{font-size:clamp(2.6rem,5.2vw,4.4rem)}
+h3{font-size:2rem}
+p{max-width:62ch;color:var(--muted)}
+.hl{color:var(--accent)}
+
+/* ---------- dřevěné prvky (styl WoodUi z aplikace) ---------- */
+.wood{background:var(--wood);border:var(--px) solid var(--ink);
+  box-shadow:inset var(--px) var(--px) 0 var(--wood-hi),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--wood-lo),0 10px 0 rgba(10,14,5,.55)}
+.btn{display:inline-flex;align-items:center;gap:.6em;font:1.7rem/1 var(--display);text-decoration:none;white-space:nowrap;
+  padding:.55em .9em .6em;color:var(--ink);background:var(--accent);border:var(--px) solid var(--ink);
+  box-shadow:inset var(--px) var(--px) 0 #f6d3a4,inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--ember),0 6px 0 var(--ink);
+  transition:transform .15s cubic-bezier(.16,1,.3,1),box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:inset var(--px) var(--px) 0 #f6d3a4,inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--ember),0 8px 0 var(--ink)}
+.btn:active{transform:translateY(5px);box-shadow:inset var(--px) var(--px) 0 #f6d3a4,inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--ember),0 1px 0 var(--ink)}
+.btn .arr{font-size:.8em}
+.btn.ghost{background:transparent;color:var(--cream);box-shadow:0 6px 0 var(--ink);border-color:var(--cream)}
+.btn.ghost:active{box-shadow:0 1px 0 var(--ink)}
+.btn.xl{font-size:clamp(2rem,3.4vw,2.8rem)}
+
+/* ---------- navigace ---------- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,26,11,.88);backdrop-filter:blur(8px);border-bottom:var(--px) solid var(--ink)}
+.nav .wrap{display:flex;align-items:center;gap:32px;height:68px}
+.logo{font:2rem/1 var(--display);text-decoration:none;letter-spacing:.04em}
+.logo span{color:var(--accent)}
+.nav nav{display:flex;gap:28px;margin-left:auto}
+.nav nav a{font:1.45rem/1 var(--display);text-decoration:none;color:var(--muted)}
+.nav nav a:hover{color:var(--cream)}
+.nav .btn{font-size:1.3rem;padding:.45em .7em .5em}
+@media (max-width:860px){.nav nav{display:none}.nav .btn{margin-left:auto;font-size:1.05rem;padding:.4em .55em .45em}}
+@media (max-width:520px){.wrap{padding:0 16px}.btn.xl{font-size:1.55rem}.logo{font-size:1.6rem}.testers .card{padding:28px 18px}.sleeper{width:120px;top:-74px}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:56px 0 96px;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(3rem,5vw,4.6rem);line-height:.95}
+.hero p{font-size:1.15rem;margin:22px 0 34px}
+.ctas{display:flex;flex-wrap:wrap;gap:18px}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr}.hero{padding-top:32px}}
+
+.scene{position:relative;aspect-ratio:4/5;max-height:640px;margin-top:70px;border:var(--px) solid var(--ink);
+  background:#0e1a0c url(a/forest.webp) center 30%/cover;box-shadow:0 0 0 var(--px) var(--wood),0 0 0 calc(var(--px)*2) var(--ink),0 16px 0 rgba(0,0,0,.4)}
+.scene::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,7,.55),rgba(10,16,7,.1) 45%,rgba(10,16,7,.5))}
+.scene .dub{position:absolute;right:3%;bottom:6%;width:46%}
+.sleeper{position:absolute;left:8%;top:-92px;width:150px;cursor:pointer;z-index:3;transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
+.sleeper img{width:100%;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
+.zz{position:absolute;left:58%;top:6px;z-index:4;pointer-events:none}
+.zz span{position:absolute;font:1.8rem/1 var(--display);color:var(--cream);opacity:0;animation:zz 3.6s linear infinite}
+.zz span:nth-child(2){animation-delay:1.2s;font-size:1.4rem}
+.zz span:nth-child(3){animation-delay:2.4s;font-size:1.1rem}
+.sleeper.awake{animation:hop .5s cubic-bezier(.3,1.6,.5,1)}
+.sleeper.awake + .zz{display:none}
+.bubble{position:absolute;left:62%;top:-40px;font:2rem/1 var(--display);color:var(--ink);background:var(--cream);padding:4px 10px;border:var(--px) solid var(--ink);opacity:0;transition:opacity .2s}
+.sleeper.awake .bubble{opacity:1}
+.bushbox{position:absolute;left:6%;bottom:4%;width:42%;aspect-ratio:1;cursor:pointer}
+.bushbox .peek{position:absolute;left:22%;width:56%;bottom:28%;animation:peek 5.5s cubic-bezier(.5,0,.3,1) infinite}
+.bushbox .bush{position:absolute;inset:0;width:100%}
+.bushbox.out .peek{animation:flee 1s cubic-bezier(.5,0,.6,1) forwards}
+.ground-run{position:absolute;bottom:2%;width:20%;left:0;animation:cross 14s linear infinite;z-index:2}
+.ground-run img{animation:bob .45s steps(2) infinite}
+.fly{position:absolute;width:6px;height:6px;background:#f7e58a;box-shadow:0 0 10px 3px rgba(247,229,138,.55);animation:fly 7s ease-in-out infinite;opacity:.0}
+
+@keyframes breathe{50%{transform:scaleY(.96) translateY(2px)}}
+@keyframes zz{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(34px,-70px);opacity:0}}
+@keyframes hop{40%{transform:translateY(-26px)}}
+@keyframes peek{0%,30%{transform:translateY(55%)}40%,62%{transform:translateY(0)}66%{transform:translateY(-6%)}74%,100%{transform:translateY(55%)}}
+@keyframes flee{0%{transform:translateY(0)}30%{transform:translateY(-40%)}100%{transform:translate(260%,-10%);opacity:0}}
+@keyframes bob{50%{transform:translateY(-6%)}}
+@keyframes fly{0%,100%{transform:translate(0,0);opacity:.15}50%{transform:translate(30px,-40px);opacity:1}}
+
+/* ---------- testeři ---------- */
+.testers{padding:40px 0 110px}
+.testers .card{padding:48px clamp(22px,4vw,56px);display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.testers h2{color:var(--cream)}
+.testers p{color:#efe3c6;margin:16px 0 26px}
+.playurl{display:block;font:clamp(1.1rem,1.7vw,1.35rem)/1.25 var(--display);color:var(--cream);margin-top:18px;word-break:break-all}
+.playurl strong{color:var(--accent)}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.slot{aspect-ratio:1;background:rgba(26,18,8,.55);border:var(--px) solid var(--ink);display:grid;place-items:center;font:2rem/1 var(--display);color:rgba(254,250,224,.35)}
+.slot img{width:78%;animation:bob 1.2s steps(2) infinite}
+.slot.on{background:#3b2a19;box-shadow:inset 0 0 0 var(--px) var(--accent)}
+.count{font:2.2rem/1 var(--display);margin-top:14px;text-align:center}
+.steps{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:30px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;font:1.35rem/1.15 var(--display);display:flex;gap:10px;align-items:baseline}
+.steps li::before{content:counter(s);color:var(--ink);background:var(--accent);padding:1px 7px 3px;border:3px solid var(--ink)}
+@media (max-width:900px){.testers .card{grid-template-columns:1fr}}
+
+/* ---------- průvod Makromonů (jediný „marquee“) ---------- */
+.parade{position:relative;height:150px;overflow:hidden;background:linear-gradient(#1b2711 0 62%,#455A2D 62% 70%,#283618 70%)}
+.parade .r{position:absolute;bottom:26%;width:88px;left:0;animation:cross var(--d,16s) linear var(--del,0s) infinite;cursor:pointer}
+.parade .r.back{animation-name:crossback}
+.parade .r.back img{transform:scaleX(-1)}
+.parade .r img{animation:bob .4s steps(2) infinite}
+.parade:hover .r{animation-play-state:paused}
+@keyframes crossback{from{transform:translateX(calc(100vw + 120%))}to{transform:translateX(-140%)}}
+@keyframes cross{from{transform:translateX(-120%)}to{transform:translateX(max(520%,calc(100vw + 20%)))}}
+
+/* ---------- cesta biomy (scroll-driven) ---------- */
+.walk{position:relative}
+.walk .stick{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:90px 0}
+.walk h2{margin-bottom:28px}
+.stepcard{padding:22px 0;border-top:var(--px) solid var(--moss)}
+.stepcard h3{color:var(--accent);margin-bottom:6px}
+.mapwin{position:relative;height:min(74dvh,640px);overflow:hidden;border:var(--px) solid var(--ink);box-shadow:0 0 0 var(--px) var(--wood),0 0 0 calc(var(--px)*2) var(--ink)}
+.maps{position:absolute;inset:0 0 auto 0}
+.maps img{width:100%}
+.walker{position:absolute;left:50%;top:52%;width:22%;translate:-50% -50%;z-index:2}
+.walker img{animation:bob .5s steps(2) infinite;filter:drop-shadow(0 8px 0 rgba(0,0,0,.35))}
+.biome{display:none;position:absolute;left:12px;top:12px;z-index:3;font:1.3rem/1 var(--display);background:var(--cream);color:var(--ink);padding:4px 10px;border:3px solid var(--ink)}
+@media (max-width:860px){.walk .stick{grid-template-columns:1fr}.mapwin{height:60dvh}}
+
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference) and (min-width:861px){
+    .walk{height:340vh;view-timeline:--walk block}
+    .walk .stick{position:sticky;top:68px;height:calc(100dvh - 68px);padding:0}
+    .maps{animation:pan linear both;animation-timeline:--walk;animation-range:contain 0% contain 100%}
+    @keyframes pan{to{transform:translateY(calc(-100% + min(74dvh,640px)))}}
+    .stepcard{opacity:.28;transition:opacity .3s;animation:lit linear both;animation-timeline:--walk}
+    .stepcard:nth-of-type(1){animation-range:contain 0% contain 33%}
+    .stepcard:nth-of-type(2){animation-range:contain 33% contain 66%}
+    .stepcard:nth-of-type(3){animation-range:contain 66% contain 100%}
+    @keyframes lit{0%,100%{opacity:.28}12%,88%{opacity:1}}
+    .biome{display:block;width:6.2em;height:1.7em}
+    .biome span{position:absolute;left:10px;top:4px;margin:0!important;opacity:0;animation:show linear none;animation-timeline:--walk}
+    .biome span:nth-child(1){animation-range:contain 0% contain 33%}
+    .biome span:nth-child(2){animation-range:contain 33% contain 66%}
+    .biome span:nth-child(3){animation-range:contain 66% contain 100%}
+    @keyframes show{0%,100%{opacity:1}}
+  }
+}
+.biome span+span{margin-left:.4em}
+
+/* ---------- Makrodex ---------- */
+.dex{padding:120px 0}
+.dex p{margin:14px 0 40px}
+.dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.mon{background:var(--forest);border:var(--px) solid var(--ink);padding:12px 8px 8px;text-align:center;cursor:pointer;transition:background .2s}
+.mon img{width:84%;margin:0 auto;aspect-ratio:1;object-fit:contain;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.mon:hover{background:#2c3d1b}
+.mon:hover img{transform:translateY(-6px) scale(1.06)}
+.mon.jump img{animation:hop .45s cubic-bezier(.3,1.6,.5,1)}
+.mon b{display:block;font:1.25rem/1 var(--display);margin-top:6px;color:var(--cream)}
+.mon small{font:1rem/1 var(--display);color:var(--leaf)}
+.mon.unknown{cursor:default}
+.mon.unknown .q{aspect-ratio:1;width:84%;margin:0 auto;display:grid;place-items:center;font:3.4rem/1 var(--display);color:#3b4a26}
+.mon.unknown b{color:#58663a}
+
+/* ---------- funkce (bento) ---------- */
+.feat{padding:40px 0 130px}
+.feat h2{margin-bottom:40px;max-width:16ch}
+.bento{display:grid;grid-template-columns:1.6fr 1fr;grid-auto-rows:minmax(260px,auto);gap:16px}
+.cell{position:relative;overflow:hidden;padding:30px;border:var(--px) solid var(--ink);display:flex;flex-direction:column;justify-content:flex-end}
+.cell p{color:inherit;opacity:.88}
+.cell h3{margin-bottom:8px}
+.c-paper{background:#d9c49a url(a/paper.webp) center/cover;color:#2b1d0e}
+.c-paper h3{color:#5a2f10}
+.c-medal{background:var(--moss)}
+.c-medal img{position:absolute;right:-30px;top:-30px;width:190px;opacity:.95}
+.c-dub{background:linear-gradient(160deg,#1f3a1f,#121a0b)}
+.c-dub img{position:absolute;right:16px;top:16px;width:150px}
+.c-wood h3{color:var(--accent)}
+.c-wood p{color:#f2e6c9}
+.bento .c-medal,.bento .c-dub{padding-top:150px}
+@media (max-width:860px){.bento{grid-template-columns:1fr}}
+
+/* ---------- závěr ---------- */
+.final{padding:110px 0 120px;text-align:center;background:radial-gradient(60% 70% at 50% 60%,#2a3a18,transparent)}
+.final img{width:150px;margin:0 auto 18px;animation:bob 1s steps(2) infinite}
+.final p{margin:16px auto 34px}
+
+footer{border-top:var(--px) solid var(--ink);background:#0d1308;padding:46px 0 36px;font-size:.95rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:baseline;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:22px}
+footer a{color:var(--muted)}
+footer button{all:unset;cursor:pointer;color:var(--muted);text-decoration:underline}
+footer small{color:#8a8668}
+
+dialog{max-width:720px;width:calc(100% - 32px);max-height:84dvh;background:#f3ead0;color:#2b1d0e;border:var(--px) solid var(--ink);padding:34px;font-size:.95rem}
+dialog::backdrop{background:rgba(8,12,5,.75)}
+dialog h2{font-size:2.4rem;color:#5a2f10}
+dialog h3{font-size:1.6rem;margin:22px 0 6px;color:#5a2f10}
+dialog p,dialog li{color:#3a2a17;max-width:none;margin:6px 0}
+dialog ul{padding-left:20px}
+dialog form{position:sticky;top:-34px;text-align:right;margin:-34px -34px 0}
+dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:3px solid var(--ink);padding:4px 12px;cursor:pointer}
+
+.reveal{opacity:.45;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .bushbox .peek{transform:translateY(20%)}
+  .ground-run,.parade .r{display:none}
+  .zz span{opacity:.8}
+}
+</style>
 </head>
 <body>
 
-    <nav id="mainNav">
-        <div class="container">
-            <a href="#" class="logo">
-                <span class="logo-dot"></span>
-                Makroflow
-            </a>
-            
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#features">Funkce</a></li>
-                <li><a href="#pokemons">Pokémoni</a></li>
-                <li><a href="#join">Beta Test</a></li>
-                <li><a href="javascript:void(0)" onclick="openPolicy()">Privacy</a></li>
-                <li><a href="#join" class="btn btn-nav">Stáhnout</a></li>
-            </ul>
-
-            <div class="menu-toggle" id="mobileMenu" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Makroflow">MAKRO<span>FLOW</span></a>
+    <nav aria-label="Hlavní">
+      <a href="#jak">Jak to funguje</a>
+      <a href="#makrodex">Makrodex</a>
+      <a href="#testeri">Testování</a>
     </nav>
+    <a class="btn" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play</a>
+  </div>
+</header>
 
-    <header class="hero">
-        <div class="hero-bg-text">MAKRO</div>
-        <div class="container hero-content">
-            <span class="hero-tagline">Diplomový projekt Maťašovský Samuel</span>
-            <h1>Více než jen <span class="text-highlight">kalorické tabulky</span>. Je to hra.</h1>
-            <p class="hero-subtitle">Makroflow kombinuje precizní sledování maker s RPG gamifikací. Dosahuj cílů, buduj návyky a chovej Pokémony jako odměnu za svou disciplínu.</p>
-            
-            <div class="hero-btns">
-                <a href="#join" class="btn">Chci testovat betu</a>
-                <a href="#features" class="btn btn-secondary">Jak to funguje?</a>
-            </div>
-
-            <div class="hero-phone-mockup">
-                <div class="hero-phone-content">
-                    <div class="hero-phone-header">Dashboard</div>
-                    <div class="hero-phone-card" style="border-left: 4px solid var(--color-brand-primary);">
-                        <strong>💧 Hydratace: 2100 / 2500 ml</strong><br>
-                        Pikachu potřebuje pít!
-                    </div>
-                    <div class="hero-phone-card" style="border-left: 4px solid var(--color-brand-accent-warm);">
-                        <strong>🔥 Bílkoviny: 105g / 150g</strong><br>
-                        Zbývá: 45g
-                    </div>
-                    <div style="font-size: 5rem; text-align: center; margin-top: 30px;">⚡</div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section id="features" class="features">
-        <div class="container">
-            <div class="features-intro card">
-                <h2>Navrženo pro progres.</h2>
-                <p>Učitelé a testery, zapomeňte na nudné zadávání dat. Makroflow přeměňuje rutinu ve zábavu. Každý log, každý ranní rituál vás posouvá dál v fitness cestě i v chytání Pokémonů.</p>
-            </div>
-
-            <div class="features-grid">
-                <div class="card feature-card">
-                    <div>
-                        <span class="feature-icon">📊</span>
-                        <h3>Inteligentní Dashboard</h3>
-                    </div>
-                    <p>Sleduj makra (P/S/T) a kalorie v reálném čase. Algoritmus <span class="text-highlight">MakroFlowEngine</span> dynamicky vypočítává cíle na základě tvého progresu.</p>
-                </div>
-
-                <div class="card feature-card">
-                    <div>
-                        <span class="feature-icon">🌅</span>
-                        <h3>Ranní Rituál</h3>
-                    </div>
-                    <p>Zapisuj váhu, kvalitu spánku, úroveň únavy a hladu. Aplikace tě naučí vnímat signály tvého těla.</p>
-                </div>
-
-                <div class="card feature-card">
-                    <div>
-                        <span class="feature-icon">🏆</span>
-                        <h3>Achievementy</h3>
-                    </div>
-                    <p>Odemykej úspěchy za konzistentnost, tréninky nebo splněné cíle. Sbírej coiny a utrácej je v PokeShopu.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="mindset">
-        <div class="container card" style="background-color: var(--color-brand-dark);">
-            <h2>„Změna těla začíná v hlavě. Makroflow ti dá mindset šampiona.“</h2>
-            <p>Spojení psychologie, gamifikace a precizní nutriční vědy v jedné nadýchané aplikaci.</p>
-        </div>
-    </section>
-
-    <section id="pokemons" class="pokemons">
-        <div class="container pokemon-layout">
-            <div class="pokemon-text">
-                <h2>Gamifikace<br> na plný plyn.</h2>
-                <p>Proč jen zapisovat jídlo, když za to můžeš získat Eeveeho? V Makroflow je tvoje disciplína měnou, za kterou si buduješ svůj vysněný tým.</p>
-                
-                <ul class="pokemon-list">
-                    <li>Chytej vzácné Pokémony na základě tvých Streaků.</li>
-                    <li>Vydělávej coiny za poctivé logování.</li>
-                    <li>Vizuální dekorace na tvé spodní liště, která tě motivuje.</li>
-                    <li>Podaří se ti je najít a pochytat všechny?</li>
-                </ul>
-            </div>
-
-            <div class="pokemon-visual">
-                <div class="pokemon-box" id="pokemonBox">
-                    <span class="secret-tag">Secret</span>
-                    
-                    <div id="activePokemon">💧</div>
-
-                    <div class="secret-overlay" id="secretOverlay" onclick="revealPokemon()">
-                        <h3>Odhalit tajemství</h3>
-                        <p>Kdo se skrývá v tvém Dashboardu?</p>
-                        <span class="btn btn-nav" style="background-color: white; color: var(--color-brand-dark); margin-top: 15px;">Klikni</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="join" class="join">
-        <div class="container join-card card">
-            <h2>Vstup do uzavřené bety.</h2>
-            <p class="subtitle">Pomoz mi vyladit Makroflow k dokonalosti. Zadej svůj Gmail, kterým se přihlašuješ do Google Play, a já tě přidám do testování.</p>
-
-            <form action="https://formspree.io/f/mkopgnvn" method="POST" class="beta-form">
-                
-                <div class="form-group form-group-full">
-                    <label for="email">Tvůj Google Play Gmail (Kritické):</label>
-                    <input type="email" id="email" name="email" placeholder="tvojebeta@gmail.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="name">Tvoje jméno / Přezdívka:</label>
-                    <input type="text" id="name" name="name" placeholder="Samuel" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="source">Kde jsi se o nás dozvěděl?</label>
-                    <select id="source" name="source">
-                        <option value="univerzita">Univerzita / Škola</option>
-                        <option value="socialni_site">Sociální sítě</option>
-                        <option value="kamarad">Od kamaráda</option>
-                        <option value="diplomka">Prezentace diplomky</option>
-                        <option value="jine">Jiné</option>
-                    </select>
-                </div>
-
-                <div class="form-group form-group-full">
-                    <label for="message">Proč chceš testovat? (Dobrovolné):</label>
-                    <textarea id="message" name="message" placeholder="Zajímá mě propojení fitness a gamifikace..."></textarea>
-                </div>
-
-                <input type="text" name="_gotcha" style="display:none">
-
-                <div class="form-submit-row">
-                    <button type="submit" class="btn">Chci testovat Makroflow</button>
-                    <p style="font-size: 0.8rem; margin-top: 15px; color: var(--color-text-sub);">Odesláním souhlasíš se zpracováním údajů pro účely beta testu.</p>
-                </div>
-
-            </form>
-        </div>
-    </section>
-
-    <section class="container" style="padding-top: 50px; padding-bottom: 50px;">
-        <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 50px; border: 3px solid var(--color-brand-primary); box-shadow: 0 30px 60px var(--color-shadow);">
-            
-            <div class="logo-wrapper">
-                <svg viewBox="0 0 100 100" class="logo-svg">
-                    <path class="logo-path" d="M50,5 L10,27.5 L10,72.5 L50,95 L90,72.5 L90,27.5 Z M50,15 L81.3,32.5 L81.3,67.5 L50,85 L18.7,67.5 L18.7,32.5 Z" />
-                    <path class="logo-path-flow" d="M18.7,50 C18.7,50 29.1,32 42.5,45 C55.9,58 70.9,68 81.3,50 L81.3,56 C70.9,74 55.9,64 42.5,51 C29.1,38 18.7,56 18.7,56 Z" />
-                </svg>
-            </div>
-
-            <h3 style="font-size: 2.2rem; color: var(--color-brand-dark); margin-bottom: 15px; letter-spacing: -0.05em;">Makroflow Logotyp</h3>
-            <p style="margin-bottom: 20px; color: var(--color-text-sub);">Toto je oficiální vektorový logotyp aplikace Makroflow, navržený jako moderní interpretace rovnováhy a toku energie. Spojuje geometrickou přesnost a organický pohyb.</p>
-            
-            <a href="#features" class="btn" style="padding: 12px 30px; font-size: 1rem;">Zjistit víc</a>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <div class="footer-layout">
-                <div class="footer-logo-section">
-                    <a href="#" class="logo">
-                        <span class="logo-dot"></span>
-                        Makroflow
-                    </a>
-                    <p>Více než aplikace. Je to tvoje cesta k disciplíně a zdraví. Gamifikovaný fitness deník pro moderní éru.</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Kontakt a Vývoj</h4>
-                    <ul>
-                        <li><a href="mailto:samuel.matasovsk@gmail.com">Email</a></li>
-                        <li><a href="https://github.com/FirmestTexas79" target="_blank">Můj GitHub profil</a></li>
-                        <li><a href="#join">Beta testování</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Právní</h4>
-                    <ul>
-                        <li><a href="javascript:void(0)" onclick="openPolicy()">Privacy Policy</a></li>
-                        <li><a href="javascript:void(0)" onclick="openPolicy()">Podmínky užití</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                &copy; 2026 Makroflow. Všechna práva vyhrazena. Projekt diplomové práce Maťašovský Samuel.
-            </div>
-        </div>
-    </footer>
-
-    <div class="policy-modal" id="policyModal">
-        <div class="policy-content card">
-            <button class="close-policy" onclick="closePolicy()">&times;</button>
-            
-            <h2>Zásady ochrany osobních údajů</h2>
-            <p>Poslední aktualizace: 15. března 2026</p>
-            
-            <div class="policy-text">
-                <p>Tato stránka a aplikace MacroFlow ("my", "naše") bere ochranu vašich osobních údajů velmi vážně. Tyto zásady popisují, jak shromažďujeme, používáme a chráníme informace v rámci vývoje a testování diplomového projektu.</p>
-
-                <h3 style="border-bottom: 2px solid var(--color-brand-cream); padding-bottom: 10px; margin-top: 40px;">⚖️ Podmínky užití aplikace (Disclaimer)</h3>
-                <p>Aplikace MacroFlow je poskytována „tak, jak je“ a je vyvíjena výhradně jako studentský projekt v rámci diplomové práce. Stažením nebo používáním aplikace souhlasíte s následujícím:</p>
-                <ul>
-                    <li>Aplikace nenahrazuje lékařské, výživové ani trenérské poradenství.</li>
-                    <li>Autor nenese odpovědnost za jakékoli nepřesnosti ve výpočtech maker ani za zdravotní interpretaci dat uživatelem.</li>
-                    <li>Používání aplikace je dobrovolné a na vlastní nebezpečí uživatele.</li>
-                </ul>
-
-                <h3 style="border-bottom: 2px solid var(--color-brand-cream); padding-bottom: 10px; margin-top: 40px;">🔒 Zásady ochrany osobních údajů</h3>
-                
-                <h3>1. Shromažďované údaje</h3>
-                <p>V rámci uzavřeného beta testování shromažďujeme následující údaje:</p>
-                <ul>
-                    <li><strong>Emailová adresa (Gmail):</strong> Nezbytná pro přidání vašeho Google účtu do seznamu testerů v Google Play Console.</li>
-                    <li><strong>Nutriční a tělesné údaje (v aplikaci):</strong> Váha, výška, věk, zapsaná jídla. Tyto údaje jsou uloženy lokálně ve vašem telefonu a synchronizovány přes Firebase.</li>
-                    <li><strong>Diagnostické údaje (Firebase):</strong> Anonymizované logy pádů aplikace a statistiky používání pro odstranění chyb.</li>
-                </ul>
-
-                <h3>2. Účel zpracování údajů</h3>
-                <p>Vaše údaje používáme výhradně pro zpřístupnění aplikace MacroFlow Beta přes Google Play Store, analýzu a opravu chyb v aplikaci a validaci výsledků diplomové práce (všechna data v práci budou přísně anonymizována).</p>
-
-                <h3>3. Sdílení údajů třetím stranám</h3>
-                <p>Vaše osobní údaje neprodáváme ani nepronajímáme třetím stranám pro marketingové účely. Data jsou zpracovávána pouze pomocí důvěryhodných šifrovaných nástrojů nezbytných pro vývoj (Google Play Console, Firebase, Formspree).</p>
-
-                <h3>4. Uchovávání dat</h3>
-                <p>Osobní údaje shromážděné pro účely beta testu budou bezpečně smazány nejpozději do 6 měsíců po úspěšné obhajobě diplomové práce.</p>
-            </div>
-        </div>
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Každý krok probouzí <span class="hl">Makromona.</span></h1>
+      <p>Makroflow hlídá makra, kroky a tréninky. Za disciplínu dostaneš pixelový svět plný tvorů, úkolů a dovedností.</p>
+      <div class="ctas">
+        <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
+        <a class="btn ghost" href="#jak">Jak to funguje</a>
+      </div>
     </div>
 
-    <script>
-        // --- 🧭 NAVIGACE: Skrývání při scrollu dolů ---
-        let lastScrollTop = 0;
-        const nav = document.getElementById('mainNav');
+    <div class="scene" aria-label="Makromoni v lese">
+      <div class="sleeper" id="gudwin" role="button" tabindex="0" aria-label="Gudwin spí. Klikni a vzbuď ho.">
+        <img src="a/m30.webp" alt="Gudwin" width="150" height="150">
+        <span class="bubble">!</span>
+      </div>
+      <div class="zz" aria-hidden="true" style="left:calc(8% + 112px);top:-92px"><span>Z</span><span>Z</span><span>z</span></div>
+      <img class="dub" src="a/npc_stary_dub.webp" alt="" aria-hidden="true">
+      <div class="bushbox" id="bush" role="button" tabindex="0" aria-label="Něco se skrývá v křoví">
+        <img class="peek" id="peek" src="a/m32.webp" alt="Makromon vykukuje z křoví">
+        <img class="bush" src="a/npc_bush.webp" alt="">
+      </div>
+      <div class="ground-run" aria-hidden="true"><img src="a/m07.webp" alt=""></div>
+      <i class="fly" style="left:20%;top:30%"></i><i class="fly" style="left:62%;top:22%;animation-delay:-2s"></i>
+      <i class="fly" style="left:44%;top:52%;animation-delay:-4s"></i><i class="fly" style="left:78%;top:46%;animation-delay:-1s"></i>
+      <i class="fly" style="left:30%;top:68%;animation-delay:-5s"></i>
+    </div>
+  </div>
+</section>
 
-        window.addEventListener('scroll', function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // Při scrollu dolů skryj, při scrollu nahoru ukaž
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                nav.classList.add('nav-hidden');
-            } else {
-                nav.classList.remove('nav-hidden');
-            }
-            lastScrollTop = scrollTop;
-        });
+<section class="testers" id="testeri">
+  <div class="wrap">
+    <div class="card wood reveal">
+      <div>
+        <h2>Hledám 12 testerů na 14 dní.</h2>
+        <p>Aby mohl Makroflow ven pro všechny, Google chce 12 lidí, kteří mají aplikaci 14 dní nainstalovanou. Stačí si ji stáhnout a nechat v telefonu.</p>
+        <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
+        <a class="playurl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener"><strong>play.google.com/store/apps/details?id=cz.uhk.macroflow</strong></a>
+        <ol class="steps">
+          <li>Otevři odkaz</li>
+          <li>Nainstaluj Makroflow</li>
+          <li>Nech ho 14 dní v mobilu</li>
+        </ol>
+      </div>
+      <div>
+        <div class="slots" id="slots" aria-hidden="true"></div>
+        <div class="count" id="count"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        // --- 📱 MOBILNÍ MENU: Toggle ---
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            const hamburger = document.getElementById('mobileMenu');
-            navLinks.classList.toggle('mobile-open');
-            hamburger.classList.toggle('active'); // Můžeš přidat animaci hamburgeru v CSS
-        }
+<div class="parade" id="parade" aria-hidden="true"></div>
 
-        // Zavřít menu po kliknutí na link na mobilu
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                const navLinks = document.getElementById('navLinks');
-                if(navLinks.classList.contains('mobile-open')) {
-                    toggleMenu();
-                }
-            });
-        });
+<section class="walk" id="jak">
+  <div class="wrap stick">
+    <div>
+      <h2>Ty trénuješ. On roste.</h2>
+      <article class="stepcard">
+        <h3>Zapiš jídlo</h3>
+        <p>Makra a kalorie se počítají samy. Cíle se upravují podle tvého progresu.</p>
+      </article>
+      <article class="stepcard">
+        <h3>Trénuj a choď</h3>
+        <p>Kroky a tréninky dávají zkušenosti. Mapou se posuneš dál, jen když se hýbeš i v reálu.</p>
+      </article>
+      <article class="stepcard">
+        <h3>Sleduj vývoj</h3>
+        <p>Tvůj Makromon sílí, na správném levelu se promění a ty rozhodneš, jaký útok se naučí.</p>
+      </article>
+    </div>
+    <div class="mapwin">
+      <div class="biome" aria-hidden="true"><span>Louka</span><span>Hvozd</span><span>Hory</span></div>
+      <div class="maps">
+        <img src="a/meadow.webp" alt="Mapa louky ze hry" width="688" height="1536" loading="lazy">
+        <img src="a/forest.webp" alt="Mapa hvozdu ze hry" width="600" height="1200" loading="lazy">
+        <img src="a/mountains.webp" alt="Mapa hor ze hry" width="688" height="1536" loading="lazy">
+      </div>
+      <div class="walker"><img src="a/m04.webp" alt="Aqulin na cestě"></div>
+    </div>
+  </div>
+</section>
 
-        // --- 🕵️‍♂️ POKÉMON: Secret Reveal Interakce ---
-        const pokemonList = ['⚡', '💧', '🍃', '🔥', '🌟', '👻'];
-        let clickCount = 0;
+<section class="dex" id="makrodex">
+  <div class="wrap">
+    <h2 class="reveal">Makrodex</h2>
+    <p class="reveal" id="dexinfo">Ručně kreslení tvorové čekají v divočině. Další přibývají s každou aktualizací.</p>
+    <div class="dexgrid" id="dex"></div>
+  </div>
+</section>
 
-        function revealPokemon() {
-            const box = document.getElementById('pokemonBox');
-            const visual = document.getElementById('activePokemon');
-            
-            // Přidat třídu pro spuštění CSS tranzice
-            box.classList.add('revealed');
-            
-            // Cyklovat Pokémony pro zábavu
-            const interval = setInterval(() => {
-                clickCount++;
-                visual.textContent = pokemonList[clickCount % pokemonList.length];
-            }, 100);
+<section class="feat" id="funkce">
+  <div class="wrap">
+    <h2 class="reveal">Fitness deník, který si budeš chtít otevřít.</h2>
+    <div class="bento">
+      <div class="cell c-paper reveal">
+        <h3>Deník s příběhem</h3>
+        <p>Úkoly, postavy a tajné lokace. Každý biom má vlastní příběh a strážce.</p>
+      </div>
+      <div class="cell c-medal reveal">
+        <img src="a/achievement_streak_10.webp" alt="" aria-hidden="true">
+        <h3>Achievementy</h3>
+        <p>Odznaky za streaky, makra i pitný režim. Bronz, stříbro, zlato, diamant.</p>
+      </div>
+      <div class="cell c-dub reveal">
+        <img src="a/npc_stary_dub.webp" alt="" aria-hidden="true">
+        <h3>Dovednosti do levelu 50</h3>
+        <p>Kácení, lov i chytání hmyzu. Každý level dá bod do stromu dovedností.</p>
+      </div>
+      <div class="cell wood c-wood reveal">
+        <h3>Ranní rituál</h3>
+        <p>Váha, spánek, únava a hlad. Naučíš se číst signály svého těla.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-            // Zastavit cyklování a nechat náhodného
-            setTimeout(() => {
-                clearInterval(interval);
-                const finalPokemon = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-                visual.textContent = finalPokemon;
-                
-                // Přidat efekt úspěchu
-                visual.style.animation = 'succesPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                setTimeout(() => visual.style.animation = '', 500);
+<section class="final">
+  <div class="wrap">
+    <img src="a/m12.webp" alt="Spirra">
+    <h2>Tvůj Makromon už čeká.</h2>
+    <p>Stáhni si Makroflow a pomoz mi dostat ho na Google Play pro všechny.</p>
+    <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
+  </div>
+</section>
+</main>
 
-            }, 1200);
-        }
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="logo" href="#top">MAKRO<span>FLOW</span></a><br>
+      <small>Diplomový projekt, Samuel Maťašovský. © 2026 Makroflow</small>
+    </div>
+    <nav aria-label="Patička">
+      <a href="mailto:samuel.matasovsk@gmail.com">samuel.matasovsk@gmail.com</a>
+      <a href="https://github.com/FirmestTexas79" target="_blank" rel="noopener">GitHub</a>
+      <button type="button" data-open="legal">Ochrana údajů a podmínky</button>
+    </nav>
+  </div>
+</footer>
 
-        // Definice succesPop animace přímo v JS pro jednoduchost
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes succesPop {
-                0% { transform: scale(0.5); opacity: 0; }
-                70% { transform: scale(1.1); }
-                100% { transform: scale(1); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
+<dialog id="legal" aria-labelledby="legal-h">
+  <form method="dialog"><button aria-label="Zavřít">X</button></form>
+  <h2 id="legal-h">Zásady ochrany osobních údajů</h2>
+  <p>Poslední aktualizace: 15. března 2026</p>
+  <p>Tato stránka a aplikace MacroFlow ("my", "naše") bere ochranu vašich osobních údajů velmi vážně. Tyto zásady popisují, jak shromažďujeme, používáme a chráníme informace v rámci vývoje a testování diplomového projektu.</p>
+  <h3>Podmínky užití aplikace (Disclaimer)</h3>
+  <p>Aplikace MacroFlow je poskytována „tak, jak je“ a je vyvíjena výhradně jako studentský projekt v rámci diplomové práce. Stažením nebo používáním aplikace souhlasíte s následujícím:</p>
+  <ul>
+    <li>Aplikace nenahrazuje lékařské, výživové ani trenérské poradenství.</li>
+    <li>Autor nenese odpovědnost za jakékoli nepřesnosti ve výpočtech maker ani za zdravotní interpretaci dat uživatelem.</li>
+    <li>Používání aplikace je dobrovolné a na vlastní nebezpečí uživatele.</li>
+  </ul>
+  <h3>1. Shromažďované údaje</h3>
+  <p>V rámci uzavřeného beta testování shromažďujeme následující údaje:</p>
+  <ul>
+    <li><b>Emailová adresa (Gmail):</b> Nezbytná pro přidání vašeho Google účtu do seznamu testerů v Google Play Console.</li>
+    <li><b>Nutriční a tělesné údaje (v aplikaci):</b> Váha, výška, věk, zapsaná jídla. Tyto údaje jsou uloženy lokálně ve vašem telefonu a synchronizovány přes Firebase.</li>
+    <li><b>Diagnostické údaje (Firebase):</b> Anonymizované logy pádů aplikace a statistiky používání pro odstranění chyb.</li>
+  </ul>
+  <h3>2. Účel zpracování údajů</h3>
+  <p>Vaše údaje používáme výhradně pro zpřístupnění aplikace MacroFlow Beta přes Google Play Store, analýzu a opravu chyb v aplikaci a validaci výsledků diplomové práce (všechna data v práci budou přísně anonymizována).</p>
+  <h3>3. Sdílení údajů třetím stranám</h3>
+  <p>Vaše osobní údaje neprodáváme ani nepronajímáme třetím stranám pro marketingové účely. Data jsou zpracovávána pouze pomocí důvěryhodných šifrovaných nástrojů nezbytných pro vývoj (Google Play Console, Firebase, Formspree).</p>
+  <h3>4. Uchovávání dat</h3>
+  <p>Osobní údaje shromážděné pro účely beta testu budou bezpečně smazány nejpozději do 6 měsíců po úspěšné obhajobě diplomové práce.</p>
+</dialog>
 
+<script>
+// Počet testerů: uprav, až se někdo přidá.
+const TESTERS = 4, NEEDED = 12;
+const MONS = [["01","Ignar"],["02","Ignaroc"],["03","Ignaroth"],["04","Aqulin"],["05","Aqulind"],["06","Aqulinox"],["07","Flori"],["08","Florind"],["09","Florindra"],["10","Umbex"],["11",""],["12","Spirra"],["13","Flamirra"],["14","Aquirra"],["15","Verdirra"],["16","Shadirra"],["17","Charmirra"],["18","Glacirra"],["19","Drakirra"],["20","Finlet"],["21","Serpfin"],["22","Mycit"],["23","Mydrus"],["24","Soulu"],["25","Soulex"],["26","Soulord"],["27","Phantil"],["28",""],["29",""],["30","Gudwin"],["31","Axlu"],["32","Mysnic"],["33",""],["34","Ignileo"],["35","Aquavulp"]];
+const known = MONS.filter(m => m[1]);
+const src = id => `a/m${id}.webp`;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        // --- 📝 PRIVACY POLICY: Modal Interakce ---
-        const modal = document.getElementById('policyModal');
+// testeři: obsazená místa ukazují Makromony
+const slots = document.getElementById("slots");
+const pick = ["12","01","04","07","30","32","10","20","24","27","34","35"];
+for (let i = 0; i < NEEDED; i++) {
+  const d = document.createElement("div");
+  d.className = "slot" + (i < TESTERS ? " on" : "");
+  d.innerHTML = i < TESTERS ? `<img src="${src(pick[i])}" alt="" style="animation-delay:-${i*.3}s">` : "?";
+  slots.append(d);
+}
+document.getElementById("count").innerHTML = `<span class="hl">${TESTERS}</span> / ${NEEDED} testerů`;
 
-        function openPolicy() {
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden'; // Zamezit scrollu body
-        }
+// Makrodex
+const dex = document.getElementById("dex");
+dex.innerHTML = MONS.map(([id, n]) => n
+  ? `<button class="mon reveal" type="button" aria-label="${n}, číslo ${id}"><img src="${src(id)}" alt="" loading="lazy" width="96" height="96"><b>${n}</b><small>#${id}</small></button>`
+  : `<div class="mon unknown reveal"><div class="q">?</div><b>???</b><small>#${id}</small></div>`).join("");
+dex.addEventListener("click", e => {
+  const m = e.target.closest(".mon:not(.unknown)"); if (!m) return;
+  m.classList.remove("jump"); void m.offsetWidth; m.classList.add("jump");
+});
+document.getElementById("dexinfo").textContent = `${known.length} ručně kreslených Makromonů čeká v divočině. Další přibývají s každou aktualizací.`;
 
-        function closePolicy() {
-            modal.classList.remove('open');
-            document.body.style.overflow = ''; // Obnovit scroll body
-        }
+// průvod Makromonů
+const parade = document.getElementById("parade");
+if (!reduce) {
+  [...known].sort(() => Math.random() - .5).slice(0, 9).forEach(([id], i) => {
+    const r = document.createElement("div");
+    r.className = "r" + (i % 3 === 2 ? " back" : "");
+    r.style.cssText = `--d:${14 + Math.random() * 10}s;--del:-${Math.random() * 22}s;width:${70 + Math.random() * 40}px;bottom:${22 + Math.random() * 10}%`;
+    r.innerHTML = `<img src="${src(id)}" alt="">`;
+    parade.append(r);
+  });
+}
 
-        // Zavřít kliknutím mimo obsah modal
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closePolicy();
-            }
-        });
+// křoví: každé vykouknutí jiný Makromon, kliknutím ho vyplašíš
+const peek = document.getElementById("peek"), bush = document.getElementById("bush");
+peek.addEventListener("animationiteration", () => { peek.src = src(known[Math.random() * known.length | 0][0]); });
+const scare = () => {
+  if (bush.classList.contains("out")) return;
+  bush.classList.add("out");
+  setTimeout(() => { bush.classList.remove("out"); peek.src = src(known[Math.random() * known.length | 0][0]); }, 1600);
+};
+bush.addEventListener("click", scare);
+bush.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), scare()));
 
-        // Zavřít klávesou Esc
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('open')) {
-                closePolicy();
-            }
-        });
+// Gudwin spí, kliknutím ho vzbudíš
+const gud = document.getElementById("gudwin");
+const wake = () => {
+  gud.classList.add("awake"); gud.setAttribute("aria-label", "Gudwin je vzhůru");
+  setTimeout(() => { gud.classList.remove("awake"); gud.setAttribute("aria-label", "Gudwin spí. Klikni a vzbuď ho."); }, 2200);
+};
+gud.addEventListener("click", wake);
+gud.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), wake()));
 
-    </script>
+// odhalení při scrollu
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: .15 });
+document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 6) * 40 + "ms"; io.observe(el); });
 
+// právní dialog
+document.querySelector("[data-open=legal]").addEventListener("click", () => document.getElementById("legal").showModal());
+</script>
 </body>
 </html>
