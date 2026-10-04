@@ -238,6 +238,28 @@ p{max-width:62ch;color:var(--muted)}
 .bento .c-medal,.bento .c-skill{padding-top:150px}
 @media (max-width:860px){.bento{grid-template-columns:1fr}}
 
+/* ---------- přihláška do testování ---------- */
+.join{padding:40px 0 120px;scroll-margin-top:var(--nav)}
+.join .card{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;padding:48px clamp(18px,4vw,56px);align-items:start}
+.join p{color:#efe3c6;margin:16px 0 0}
+.join .mascot{width:150px;margin-top:28px;animation:idle 1.8s ease-in-out infinite}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:grid;gap:8px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font:1.35rem/1 var(--display);color:var(--cream)}
+.field label em{font-style:normal;color:var(--accent)}
+.field input,.field select,.field textarea{font:1rem/1.4 var(--body);color:var(--cream);background:#2a1b0e;border:3px solid var(--ink);box-shadow:inset 3px 3px 0 rgba(0,0,0,.35);padding:12px 14px;width:100%}
+.field textarea{min-height:96px;resize:vertical}
+.field input::placeholder,.field textarea::placeholder{color:#b6a685}
+.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid var(--accent);outline-offset:0}
+.field .hint{font-size:.85rem;color:#e6d6b4}
+.form .btn{justify-self:start}
+.form .note{grid-column:1/-1;font-size:.85rem;color:#e6d6b4;margin:0}
+.status{grid-column:1/-1;font:1.4rem/1.2 var(--display);padding:12px 14px;border:3px solid var(--ink)}
+.status.ok{background:#3d5a22;color:var(--cream)}
+.status.err{background:#7a2a1a;color:var(--cream)}
+@media (max-width:900px){.join .card{grid-template-columns:1fr}.form{grid-template-columns:1fr}.join .mascot{display:none}}
+
 /* ---------- závěr s logem ---------- */
 .final{position:relative;padding:120px 0 130px;text-align:center;overflow:hidden;background:radial-gradient(55% 65% at 50% 45%,#2a3a18,transparent)}
 .emblem{position:relative;width:min(240px,60vw);aspect-ratio:1;margin:0 auto 34px;color:var(--accent);animation:float 5s ease-in-out infinite}
@@ -329,7 +351,7 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
     <p>Makroflow hlídá makra, kroky a tréninky. Za disciplínu dostaneš pixelový svět plný tvorů, úkolů a dovedností.</p>
     <div class="ctas">
       <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
-      <a class="btn ghost" href="#jak">Jak to funguje</a>
+      <a class="btn ghost" href="#join">Chci testovat</a>
     </div>
   </div>
 </section>
@@ -339,13 +361,16 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
     <div class="card wood reveal">
       <div>
         <h2>Hledám 12 testerů na 14 dní.</h2>
-        <p>Aby mohl Makroflow ven pro všechny, Google chce 12 lidí, kteří mají aplikaci 14 dní nainstalovanou. Stačí si ji stáhnout a nechat v telefonu.</p>
-        <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
+        <p>Aby mohl Makroflow ven pro všechny, Google chce 12 lidí, kteří mají aplikaci 14 dní nainstalovanou. Pošli mi Gmail, přidám tě mezi testery a pak si ji stáhneš.</p>
+        <div class="ctas">
+          <a class="btn xl" href="#join">Chci testovat <span class="arr">▼</span></a>
+          <a class="btn ghost" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play</a>
+        </div>
         <a class="playurl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener"><strong>play.google.com/store/apps/details?id=cz.uhk.macroflow</strong></a>
         <ol class="steps">
-          <li>Otevři odkaz</li>
-          <li>Nainstaluj Makroflow</li>
-          <li>Nech ho 14 dní v mobilu</li>
+          <li>Vyplň přihlášku</li>
+          <li>Počkej, až tě přidám</li>
+          <li>Stáhni a nech 14 dní v mobilu</li>
         </ol>
       </div>
       <div>
@@ -417,6 +442,47 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
         <h3>Ranní rituál</h3>
         <p>Váha, spánek, únava a hlad. Naučíš se číst signály svého těla.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap">
+    <div class="card wood reveal">
+      <div>
+        <h2>Chci testovat.</h2>
+        <p>Napiš mi Gmail, se kterým se přihlašuješ do Google Play. Přidám tě mezi testery a pak si Makroflow stáhneš z odkazu.</p>
+        <img class="mascot" src="a/m30.webp" alt="Gudwin" width="150" height="150">
+      </div>
+      <form class="form" id="betaform" action="https://formspree.io/f/mkopgnvn" method="POST">
+        <div class="field full">
+          <label for="email">Gmail z Google Play <em>(povinné)</em></label>
+          <input type="email" id="email" name="email" placeholder="tvuj.ucet@gmail.com" autocomplete="email" required>
+          <span class="hint">Musí to být účet, který máš v telefonu v Obchodě Play.</span>
+        </div>
+        <div class="field">
+          <label for="name">Jméno nebo přezdívka</label>
+          <input type="text" id="name" name="name" placeholder="Samuel" autocomplete="nickname" required>
+        </div>
+        <div class="field">
+          <label for="source">Kde ses o nás dozvěděl?</label>
+          <select id="source" name="source">
+            <option value="univerzita">Univerzita / Škola</option>
+            <option value="socialni_site">Sociální sítě</option>
+            <option value="kamarad">Od kamaráda</option>
+            <option value="diplomka">Prezentace diplomky</option>
+            <option value="jine">Jiné</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="message">Proč chceš testovat? (nepovinné)</label>
+          <textarea id="message" name="message" placeholder="Zajímá mě propojení fitness a gamifikace..."></textarea>
+        </div>
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
+        <div class="status" id="formstatus" role="status" hidden></div>
+        <button type="submit" class="btn">Odeslat přihlášku <span class="arr">▶</span></button>
+        <p class="note">Odesláním souhlasíš se zpracováním údajů pro účely beta testu.</p>
+      </form>
     </div>
   </div>
 </section>
@@ -596,6 +662,24 @@ gud.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.
 // odhalení při scrollu
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: .15 });
 document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 6) * 40 + "ms"; io.observe(el); });
+
+// přihláška: odeslání bez opuštění stránky (bez JS funguje klasický POST)
+const form = document.getElementById("betaform"), fstatus = document.getElementById("formstatus");
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = form.querySelector("button[type=submit]");
+  btn.disabled = true; fstatus.hidden = false; fstatus.className = "status"; fstatus.textContent = "Odesílám...";
+  try {
+    const r = await fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+    if (!r.ok) throw 0;
+    form.reset(); fstatus.className = "status ok";
+    fstatus.textContent = "Hotovo, díky! Jakmile tě přidám mezi testery, stáhneš si Makroflow z odkazu na Google Play.";
+  } catch {
+    fstatus.className = "status err";
+    fstatus.textContent = "Odeslání se nepovedlo. Zkus to znovu, nebo mi napiš na samuel.matasovsk@gmail.com.";
+  }
+  btn.disabled = false;
+});
 
 document.querySelector("[data-open=legal]").addEventListener("click", () => document.getElementById("legal").showModal());
 </script>
