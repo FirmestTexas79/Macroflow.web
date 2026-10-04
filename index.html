@@ -2,43 +2,44 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Makroflow</title>
 <meta name="description" content="Fitness deník, který z tvých maker, kroků a tréninků dělá pixelovou hru. Sbírej Makromony a sleduj jejich vývoj.">
 <meta property="og:title" content="Makroflow: každý tvůj krok probouzí Makromona">
 <meta property="og:description" content="Makra, kroky a tréninky jako RPG. Stáhni si Makroflow z Google Play.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="a/m12.webp">
-<meta name="theme-color" content="#141d0c">
-<link rel="icon" href="a/favicon.png">
+<meta name="theme-color" content="#121a0b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23E9B072' fill-rule='evenodd' d='M50,5 L10,27.5 L10,72.5 L50,95 L90,72.5 L90,27.5 Z M50,15 L81.3,32.5 L81.3,67.5 L50,85 L18.7,67.5 L18.7,32.5 Z'/%3E%3Cpath fill='%23E9B072' d='M18.7,50 C18.7,50 29.1,32 42.5,45 C55.9,58 70.9,68 81.3,50 L81.3,56 C70.9,74 55.9,64 42.5,51 C29.1,38 18.7,56 18.7,56 Z'/%3E%3C/svg%3E">
 <link rel="preload" href="a/jersey_15.ttf" as="font" type="font/ttf" crossorigin>
 <style>
 @font-face{font-family:"Jersey 15";src:url(a/jersey_15.ttf) format("truetype");font-display:swap}
 :root{
-  /* layout: hero split, wood tester panel, scroll-pinned map walk, dex grid, bento */
+  /* layout: noční les jako vrstvená pixelová scéna, dřevěná cedule testerů, procházka mapou při scrollu, Makrodex, bento */
   /* barvy z aplikace (res/values/colors.xml) */
-  --night:#121a0b; --forest:#1b2711; --moss:#283618; --olive:#606C38; --leaf:#8C9C5B;
+  --night:#121a0b; --sky:#16241a; --forest:#1b2711; --moss:#283618; --olive:#606C38; --leaf:#8C9C5B;
   --cream:#FEFAE0; --muted:#cfcaa6; --accent:#E9B072; --ember:#BC6C25;
-  --wood:#7a5232; --wood-hi:#a07352; --wood-lo:#4a2f1a; --ink:#1a1208;
-  --px:4px; --max:1240px;
+  --wood:#7a5232; --wood-hi:#a07352; --wood-lo:#4a2f1a; --ink:#1a1208; --grass:#28361a;
+  --px:4px; --max:1240px; --nav:68px;
   --display:"Jersey 15", ui-monospace, monospace;
   --body:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{overflow-x:clip;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--night);color:var(--cream);font:17px/1.6 var(--body);overflow-x:hidden}
 img{display:block;max-width:100%;image-rendering:pixelated}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
-h1,h2,h3,.display{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:1}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:.01em;line-height:1;text-wrap:balance}
 h2{font-size:clamp(2.6rem,5.2vw,4.4rem)}
 h3{font-size:2rem}
 p{max-width:62ch;color:var(--muted)}
 .hl{color:var(--accent)}
+.logo-mark{width:1em;height:1em;flex:none;fill:currentColor}
 
-/* ---------- dřevěné prvky (styl WoodUi z aplikace) ---------- */
+/* ---------- dřevo (styl WoodUi) a tlačítka ---------- */
 .wood{background:var(--wood);border:var(--px) solid var(--ink);
   box-shadow:inset var(--px) var(--px) 0 var(--wood-hi),inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--wood-lo),0 10px 0 rgba(10,14,5,.55)}
 .btn{display:inline-flex;align-items:center;gap:.6em;font:1.7rem/1 var(--display);text-decoration:none;white-space:nowrap;
@@ -48,88 +49,125 @@ p{max-width:62ch;color:var(--muted)}
 .btn:hover{transform:translateY(-2px);box-shadow:inset var(--px) var(--px) 0 #f6d3a4,inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--ember),0 8px 0 var(--ink)}
 .btn:active{transform:translateY(5px);box-shadow:inset var(--px) var(--px) 0 #f6d3a4,inset calc(var(--px)*-1) calc(var(--px)*-1) 0 var(--ember),0 1px 0 var(--ink)}
 .btn .arr{font-size:.8em}
-.btn.ghost{background:transparent;color:var(--cream);box-shadow:0 6px 0 var(--ink);border-color:var(--cream)}
+.btn.ghost{background:rgba(18,26,11,.55);color:var(--cream);box-shadow:0 6px 0 var(--ink);border-color:var(--cream)}
 .btn.ghost:active{box-shadow:0 1px 0 var(--ink)}
 .btn.xl{font-size:clamp(2rem,3.4vw,2.8rem)}
 
 /* ---------- navigace ---------- */
-.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,26,11,.88);backdrop-filter:blur(8px);border-bottom:var(--px) solid var(--ink)}
-.nav .wrap{display:flex;align-items:center;gap:32px;height:68px}
-.logo{font:2rem/1 var(--display);text-decoration:none;letter-spacing:.04em}
-.logo span{color:var(--accent)}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(18,26,11,.86);backdrop-filter:blur(8px);border-bottom:var(--px) solid var(--ink)}
+.nav .wrap{display:flex;align-items:center;gap:32px;height:var(--nav)}
+.logo{display:inline-flex;align-items:center;gap:.4em;font:2rem/1 var(--display);text-decoration:none;letter-spacing:.04em}
+.logo .logo-mark{color:var(--accent);font-size:1.25em;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.logo:hover .logo-mark{transform:rotate(60deg)}
+.logo b{color:var(--accent);font-weight:400}
 .nav nav{display:flex;gap:28px;margin-left:auto}
 .nav nav a{font:1.45rem/1 var(--display);text-decoration:none;color:var(--muted)}
 .nav nav a:hover{color:var(--cream)}
 .nav .btn{font-size:1.3rem;padding:.45em .7em .5em}
 @media (max-width:860px){.nav nav{display:none}.nav .btn{margin-left:auto;font-size:1.05rem;padding:.4em .55em .45em}}
-@media (max-width:520px){.wrap{padding:0 16px}.btn.xl{font-size:1.55rem}.logo{font-size:1.6rem}.testers .card{padding:28px 18px}.sleeper{width:120px;top:-74px}}
 
-/* ---------- hero ---------- */
-.hero{position:relative;padding:56px 0 96px;overflow:hidden}
-.hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:56px;align-items:center}
-.hero h1{font-size:clamp(3rem,5vw,4.6rem);line-height:.95}
-.hero p{font-size:1.15rem;margin:22px 0 34px}
+/* ---------- hero: vrstvený noční les ---------- */
+.hero{position:relative;overflow:hidden;min-height:clamp(640px,calc(100dvh - var(--nav)),900px);display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#0d1510 0%,#16241a 45%,#1d2f1c 70%,#22331a 100%)}
+.hero .lay{position:absolute;left:0;right:0;pointer-events:none;image-rendering:pixelated;will-change:transform}
+.stars{top:0;height:62%;background:url(a/stars.png) 0 0/640px auto repeat;opacity:.9;animation:twinkle 4s steps(2) infinite}
+.moon{position:absolute;top:9%;right:11%;width:92px;image-rendering:pixelated;filter:drop-shadow(0 0 28px rgba(254,244,200,.35));will-change:transform}
+.t-far{bottom:44px;height:360px;background:url(a/trees_far.png) 0 100%/960px 360px repeat-x}
+.t-mid{bottom:46px;height:340px;background:url(a/trees_mid.png) -180px 100%/960px 360px repeat-x}
+.fog{bottom:90px;height:220px;background:linear-gradient(180deg,transparent,rgba(120,150,110,.10) 55%,transparent)}
+.t-near{bottom:50px;height:300px;background:url(a/trees_near.png) -420px 100%/1120px 420px repeat-x}
+.ground{bottom:0;height:116px;background:url(a/grass.png) 0 0/256px 80px repeat-x,linear-gradient(var(--grass) 0 0) 0 22px/100% 100% no-repeat}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 80% at 18% 30%,rgba(10,16,8,.72),transparent 70%)}
+.hero-copy{position:relative;z-index:3;width:100%;padding-top:clamp(40px,8vh,96px);padding-bottom:300px}
+.hero h1{font-size:clamp(3rem,5.6vw,5.2rem);line-height:.95;max-width:20ch}
+.hero p{font-size:1.15rem;margin:22px 0 34px;color:#ddd8b8;max-width:46ch}
 .ctas{display:flex;flex-wrap:wrap;gap:18px}
-@media (max-width:860px){.hero .wrap{grid-template-columns:1fr}.hero{padding-top:32px}}
 
-.scene{position:relative;aspect-ratio:4/5;max-height:640px;margin-top:70px;border:var(--px) solid var(--ink);
-  background:#0e1a0c url(a/forest.webp) center 30%/cover;box-shadow:0 0 0 var(--px) var(--wood),0 0 0 calc(var(--px)*2) var(--ink),0 16px 0 rgba(0,0,0,.4)}
-.scene::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,7,.55),rgba(10,16,7,.1) 45%,rgba(10,16,7,.5))}
-.scene .dub{position:absolute;right:3%;bottom:6%;width:46%}
-.sleeper{position:absolute;left:8%;top:-92px;width:150px;cursor:pointer;z-index:3;transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
+/* postavy na zemi */
+.stage{position:absolute;inset:0;z-index:2;pointer-events:none}
+.stage > *{pointer-events:auto}
+.sleeper{position:absolute;bottom:92px;right:calc(50% - 300px);width:150px;cursor:pointer;transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
 .sleeper img{width:100%;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
-.zz{position:absolute;left:58%;top:6px;z-index:4;pointer-events:none}
+.zz{position:absolute;left:62%;top:-6px;pointer-events:none}
 .zz span{position:absolute;font:1.8rem/1 var(--display);color:var(--cream);opacity:0;animation:zz 3.6s linear infinite}
 .zz span:nth-child(2){animation-delay:1.2s;font-size:1.4rem}
 .zz span:nth-child(3){animation-delay:2.4s;font-size:1.1rem}
+.sleeper .bubble{position:absolute;left:66%;top:-44px;font:2rem/1 var(--display);color:var(--ink);background:var(--cream);padding:2px 10px;border:var(--px) solid var(--ink);opacity:0;transition:opacity .2s}
 .sleeper.awake{animation:hop .5s cubic-bezier(.3,1.6,.5,1)}
-.sleeper.awake + .zz{display:none}
-.bubble{position:absolute;left:62%;top:-40px;font:2rem/1 var(--display);color:var(--ink);background:var(--cream);padding:4px 10px;border:var(--px) solid var(--ink);opacity:0;transition:opacity .2s}
 .sleeper.awake .bubble{opacity:1}
-.bushbox{position:absolute;left:6%;bottom:4%;width:42%;aspect-ratio:1;cursor:pointer}
-.bushbox .peek{position:absolute;left:22%;width:56%;bottom:28%;animation:peek 5.5s cubic-bezier(.5,0,.3,1) infinite}
-.bushbox .bush{position:absolute;inset:0;width:100%}
-.bushbox.out .peek{animation:flee 1s cubic-bezier(.5,0,.6,1) forwards}
-.ground-run{position:absolute;bottom:2%;width:20%;left:0;animation:cross 14s linear infinite;z-index:2}
-.ground-run img{animation:bob .45s steps(2) infinite}
-.fly{position:absolute;width:6px;height:6px;background:#f7e58a;box-shadow:0 0 10px 3px rgba(247,229,138,.55);animation:fly 7s ease-in-out infinite;opacity:.0}
+.sleeper.awake .zz{display:none}
 
-@keyframes breathe{50%{transform:scaleY(.96) translateY(2px)}}
+.bushwrap{position:absolute;bottom:84px;right:max(4%,calc(50% - 600px));width:290px;aspect-ratio:64/44}
+.bushwrap .bush{position:absolute;inset:0;width:100%;z-index:2;transform-origin:50% 100%}
+.bushwrap.shake .bush{animation:rustle .32s ease-in-out infinite}
+.bush-back{position:absolute;bottom:88px;left:-40px;width:250px;opacity:.9;z-index:1}
+.runner{position:absolute;left:30%;bottom:28%;width:42%;z-index:1;transform:translateY(35%)}
+.bushwrap.shake .runner{animation:peekup 1.4s ease-in-out infinite}
+.runner .flip{display:block}
+.runner img{width:100%;transform-origin:50% 100%;filter:drop-shadow(0 6px 0 rgba(0,0,0,.3))}
+.leafbit{position:absolute;width:8px;height:8px;background:#68a03c;z-index:4;pointer-events:none}
+.dust{position:absolute;width:12px;height:12px;background:rgba(214,200,160,.75);pointer-events:none;z-index:4}
+.fly{position:absolute;width:6px;height:6px;background:#f7e58a;box-shadow:0 0 10px 3px rgba(247,229,138,.55);animation:fly 7s ease-in-out infinite;opacity:0;z-index:2;pointer-events:none}
+
+@keyframes twinkle{50%{opacity:.55}}
+@keyframes breathe{50%{transform:scaleY(.95) translateY(2px)}}
 @keyframes zz{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(34px,-70px);opacity:0}}
 @keyframes hop{40%{transform:translateY(-26px)}}
-@keyframes peek{0%,30%{transform:translateY(55%)}40%,62%{transform:translateY(0)}66%{transform:translateY(-6%)}74%,100%{transform:translateY(55%)}}
-@keyframes flee{0%{transform:translateY(0)}30%{transform:translateY(-40%)}100%{transform:translate(260%,-10%);opacity:0}}
-@keyframes bob{50%{transform:translateY(-6%)}}
+@keyframes rustle{0%,100%{transform:rotate(0) scaleX(1)}25%{transform:rotate(-2.2deg) scaleX(1.02)}75%{transform:rotate(2.2deg) scaleX(.98)}}
+@keyframes peekup{0%,100%{transform:translateY(35%)}50%{transform:translateY(16%)}}
 @keyframes fly{0%,100%{transform:translate(0,0);opacity:.15}50%{transform:translate(30px,-40px);opacity:1}}
 
+@supports (animation-timeline: scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    .stars,.moon,.t-far,.t-mid,.t-near,.hero-copy{animation-timeline:scroll(root);animation-range:0 100vh;animation-fill-mode:both;animation-timing-function:linear}
+    .stars{animation-name:para1}.moon{animation-name:para0}.t-far{animation-name:para1}.t-mid{animation-name:para2}.t-near{animation-name:para3}.hero-copy{animation-name:copyout}
+    @keyframes para0{to{transform:translateY(220px)}}
+    @keyframes para1{to{transform:translateY(160px)}}
+    @keyframes para2{to{transform:translateY(100px)}}
+    @keyframes para3{to{transform:translateY(48px)}}
+    @keyframes copyout{to{transform:translateY(-60px);opacity:.2}}
+  }
+}
+@media (max-width:860px){
+  .hero-copy{padding-bottom:330px}
+  .sleeper{right:auto;left:6%;width:118px;bottom:96px}
+  .bushwrap{width:220px;right:2%}
+  .bush-back{display:none}
+  .moon{width:52px;top:4%;right:5%}
+}
+
 /* ---------- testeři ---------- */
-.testers{padding:40px 0 110px}
-.testers .card{padding:48px clamp(22px,4vw,56px);display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
-.testers h2{color:var(--cream)}
+.testers{padding:90px 0 110px;position:relative}
+.testers .card{padding:48px clamp(18px,4vw,56px);display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
 .testers p{color:#efe3c6;margin:16px 0 26px}
 .playurl{display:block;font:clamp(1.1rem,1.7vw,1.35rem)/1.25 var(--display);color:var(--cream);margin-top:18px;word-break:break-all}
 .playurl strong{color:var(--accent)}
 .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .slot{aspect-ratio:1;background:rgba(26,18,8,.55);border:var(--px) solid var(--ink);display:grid;place-items:center;font:2rem/1 var(--display);color:rgba(254,250,224,.35)}
-.slot img{width:78%;animation:bob 1.2s steps(2) infinite}
+.slot img{width:78%;animation:idle 1.6s ease-in-out infinite}
 .slot.on{background:#3b2a19;box-shadow:inset 0 0 0 var(--px) var(--accent)}
 .count{font:2.2rem/1 var(--display);margin-top:14px;text-align:center}
 .steps{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:30px;padding:0;list-style:none;counter-reset:s}
 .steps li{counter-increment:s;font:1.35rem/1.15 var(--display);display:flex;gap:10px;align-items:baseline}
 .steps li::before{content:counter(s);color:var(--ink);background:var(--accent);padding:1px 7px 3px;border:3px solid var(--ink)}
+@keyframes idle{50%{transform:translateY(-5%) scaleY(1.03)}}
 @media (max-width:900px){.testers .card{grid-template-columns:1fr}}
 
-/* ---------- průvod Makromonů (jediný „marquee“) ---------- */
-.parade{position:relative;height:150px;overflow:hidden;background:linear-gradient(#1b2711 0 62%,#455A2D 62% 70%,#283618 70%)}
-.parade .r{position:absolute;bottom:26%;width:88px;left:0;animation:cross var(--d,16s) linear var(--del,0s) infinite;cursor:pointer}
-.parade .r.back{animation-name:crossback}
-.parade .r.back img{transform:scaleX(-1)}
-.parade .r img{animation:bob .4s steps(2) infinite}
-.parade:hover .r{animation-play-state:paused}
-@keyframes crossback{from{transform:translateX(calc(100vw + 120%))}to{transform:translateX(-140%)}}
-@keyframes cross{from{transform:translateX(-120%)}to{transform:translateX(max(520%,calc(100vw + 20%)))}}
+/* ---------- průvod Makromonů (jediný pás přes celou šířku) ---------- */
+.parade{position:relative;height:170px;overflow:hidden;image-rendering:pixelated;background:url(a/grass.png) 0 calc(58% - 6px)/256px 80px repeat-x,linear-gradient(var(--night) 0 62%,var(--grass) 62%)}
+.parade .r{position:absolute;left:0;bottom:30%;width:var(--w,90px);animation:var(--dir,goright) var(--d,16s) linear var(--del,0s) infinite}
+.parade .f{display:block}
+.parade .f.mirror{transform:scaleX(-1)}
+.parade .r img{width:100%;transform-origin:50% 100%;animation:gait var(--g,.36s) ease-in-out infinite}
+.parade .r::after{content:"";position:absolute;left:18%;right:18%;bottom:-5px;height:8px;background:rgba(0,0,0,.35);border-radius:50%;animation:shadow var(--g,.36s) ease-in-out infinite}
+.parade:hover .r,.parade:hover .r img,.parade:hover .r::after{animation-play-state:paused}
+@keyframes goright{from{transform:translateX(-140px)}to{transform:translateX(calc(100vw + 40px))}}
+@keyframes goleft{from{transform:translateX(calc(100vw + 40px))}to{transform:translateX(-140px)}}
+@keyframes gait{0%,100%{transform:translateY(0) rotate(0) scale(1.04,.96)}30%{transform:translateY(-16%) rotate(-3deg) scale(.97,1.03)}60%{transform:translateY(-10%) rotate(2deg)}}
+@keyframes shadow{30%{transform:scaleX(.7);opacity:.6}}
 
-/* ---------- cesta biomy (scroll-driven) ---------- */
+/* ---------- procházka mapou (vázaná na scroll) ---------- */
 .walk{position:relative}
 .walk .stick{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:90px 0}
 .walk h2{margin-bottom:28px}
@@ -138,37 +176,40 @@ p{max-width:62ch;color:var(--muted)}
 .mapwin{position:relative;height:min(74dvh,640px);overflow:hidden;border:var(--px) solid var(--ink);box-shadow:0 0 0 var(--px) var(--wood),0 0 0 calc(var(--px)*2) var(--ink)}
 .maps{position:absolute;inset:0 0 auto 0}
 .maps img{width:100%}
-.walker{position:absolute;left:50%;top:52%;width:22%;translate:-50% -50%;z-index:2}
-.walker img{animation:bob .5s steps(2) infinite;filter:drop-shadow(0 8px 0 rgba(0,0,0,.35))}
-.biome{display:none;position:absolute;left:12px;top:12px;z-index:3;font:1.3rem/1 var(--display);background:var(--cream);color:var(--ink);padding:4px 10px;border:3px solid var(--ink)}
+.walker{position:absolute;left:50%;top:50%;width:18%;translate:-50% -50%;z-index:2}
+.walker img{transform-origin:50% 100%;filter:drop-shadow(0 8px 0 rgba(0,0,0,.35))}
+.biome{display:none;position:absolute;left:12px;top:12px;z-index:3;font:1.3rem/1 var(--display)}
+.biome span{background:var(--cream);color:var(--ink);padding:4px 10px;border:3px solid var(--ink)}
 @media (max-width:860px){.walk .stick{grid-template-columns:1fr}.mapwin{height:60dvh}}
 
 @supports (animation-timeline: view()){
   @media (prefers-reduced-motion:no-preference) and (min-width:861px){
     .walk{height:340vh;view-timeline:--walk block}
-    .walk .stick{position:sticky;top:68px;height:calc(100dvh - 68px);padding:0}
+    .walk .stick{position:sticky;top:var(--nav);height:calc(100dvh - var(--nav));padding:0}
     .maps{animation:pan linear both;animation-timeline:--walk;animation-range:contain 0% contain 100%}
     @keyframes pan{to{transform:translateY(calc(-100% + min(74dvh,640px)))}}
-    .stepcard{opacity:.28;transition:opacity .3s;animation:lit linear both;animation-timeline:--walk}
+    /* krok jen když se scrolluje: cyklus chůze je navázaný na posun stránky */
+    .walker img{animation:stride linear both;animation-timeline:--walk;animation-range:contain 0% contain 100%;animation-iteration-count:46}
+    @keyframes stride{0%,100%{transform:translateY(0) rotate(0) scale(1.03,.97)}25%{transform:translateY(-12%) rotate(-4deg)}50%{transform:translateY(0) scale(1.03,.97)}75%{transform:translateY(-12%) rotate(4deg)}}
+    .stepcard{animation:lit linear both;animation-timeline:--walk}
     .stepcard:nth-of-type(1){animation-range:contain 0% contain 33%}
     .stepcard:nth-of-type(2){animation-range:contain 33% contain 66%}
     .stepcard:nth-of-type(3){animation-range:contain 66% contain 100%}
     @keyframes lit{0%,100%{opacity:.28}12%,88%{opacity:1}}
     .biome{display:block;width:6.2em;height:1.7em}
-    .biome span{position:absolute;left:10px;top:4px;margin:0!important;opacity:0;animation:show linear none;animation-timeline:--walk}
+    .biome span{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;animation:show linear none;animation-timeline:--walk}
     .biome span:nth-child(1){animation-range:contain 0% contain 33%}
     .biome span:nth-child(2){animation-range:contain 33% contain 66%}
     .biome span:nth-child(3){animation-range:contain 66% contain 100%}
     @keyframes show{0%,100%{opacity:1}}
   }
 }
-.biome span+span{margin-left:.4em}
 
 /* ---------- Makrodex ---------- */
 .dex{padding:120px 0}
 .dex p{margin:14px 0 40px}
 .dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
-.mon{background:var(--forest);border:var(--px) solid var(--ink);padding:12px 8px 8px;text-align:center;cursor:pointer;transition:background .2s}
+.mon{font:inherit;color:inherit;background:var(--forest);border:var(--px) solid var(--ink);padding:12px 8px 8px;text-align:center;cursor:pointer;transition:background .2s}
 .mon img{width:84%;margin:0 auto;aspect-ratio:1;object-fit:contain;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
 .mon:hover{background:#2c3d1b}
 .mon:hover img{transform:translateY(-6px) scale(1.06)}
@@ -189,25 +230,31 @@ p{max-width:62ch;color:var(--muted)}
 .c-paper{background:#d9c49a url(a/paper.webp) center/cover;color:#2b1d0e}
 .c-paper h3{color:#5a2f10}
 .c-medal{background:var(--moss)}
-.c-medal img{position:absolute;right:-30px;top:-30px;width:190px;opacity:.95}
-.c-dub{background:linear-gradient(160deg,#1f3a1f,#121a0b)}
-.c-dub img{position:absolute;right:16px;top:16px;width:150px}
+.c-medal img{position:absolute;right:-30px;top:-30px;width:190px}
+.c-skill{background:linear-gradient(160deg,#1f3a1f,#121a0b)}
+.c-skill img{position:absolute;right:18px;top:12px;width:150px;animation:idle 2.4s ease-in-out infinite}
 .c-wood h3{color:var(--accent)}
 .c-wood p{color:#f2e6c9}
-.bento .c-medal,.bento .c-dub{padding-top:150px}
+.bento .c-medal,.bento .c-skill{padding-top:150px}
 @media (max-width:860px){.bento{grid-template-columns:1fr}}
 
-/* ---------- závěr ---------- */
-.final{padding:110px 0 120px;text-align:center;background:radial-gradient(60% 70% at 50% 60%,#2a3a18,transparent)}
-.final img{width:150px;margin:0 auto 18px;animation:bob 1s steps(2) infinite}
+/* ---------- závěr s logem ---------- */
+.final{position:relative;padding:120px 0 130px;text-align:center;overflow:hidden;background:radial-gradient(55% 65% at 50% 45%,#2a3a18,transparent)}
+.emblem{position:relative;width:min(240px,60vw);aspect-ratio:1;margin:0 auto 34px;color:var(--accent);animation:float 5s ease-in-out infinite}
+.emblem svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 0 30px rgba(233,176,114,.35)) drop-shadow(0 8px 0 var(--ink))}
+.emblem .wave{animation:flow 3s ease-in-out infinite;transform-origin:50% 50%}
+.emblem img{position:absolute;width:44%;bottom:-8%;right:-30%;animation:idle 1.8s ease-in-out infinite}
+.emblem img.l{left:-30%;right:auto;bottom:-6%;width:40%;animation-delay:-.9s}
 .final p{margin:16px auto 34px}
+@keyframes float{50%{transform:translateY(-10px)}}
+@keyframes flow{50%{transform:scaleY(.82)}}
 
 footer{border-top:var(--px) solid var(--ink);background:#0d1308;padding:46px 0 36px;font-size:.95rem}
-footer .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:baseline;justify-content:space-between}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}
 footer nav{display:flex;flex-wrap:wrap;gap:22px}
 footer a{color:var(--muted)}
 footer button{all:unset;cursor:pointer;color:var(--muted);text-decoration:underline}
-footer small{color:#8a8668}
+footer small{display:block;color:#8a8668;margin-top:8px}
 
 dialog{max-width:720px;width:calc(100% - 32px);max-height:84dvh;background:#f3ead0;color:#2b1d0e;border:var(--px) solid var(--ink);padding:34px;font-size:.95rem}
 dialog::backdrop{background:rgba(8,12,5,.75)}
@@ -218,23 +265,30 @@ dialog ul{padding-left:20px}
 dialog form{position:sticky;top:-34px;text-align:right;margin:-34px -34px 0}
 dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:3px solid var(--ink);padding:4px 12px;cursor:pointer}
 
-.reveal{opacity:.45;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal{opacity:.4;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
 .reveal.in{opacity:1;transform:none}
 
+@media (max-width:520px){.wrap{padding:0 16px}.btn.xl{font-size:1.55rem}.logo{font-size:1.6rem}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .reveal{opacity:1;transform:none}
-  .bushbox .peek{transform:translateY(20%)}
-  .ground-run,.parade .r{display:none}
+  .runner{transform:translateY(30%)}
+  .parade .r{display:none}
   .zz span{opacity:.8}
 }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 100 100">
+    <path fill-rule="evenodd" d="M50,5 L10,27.5 L10,72.5 L50,95 L90,72.5 L90,27.5 Z M50,15 L81.3,32.5 L81.3,67.5 L50,85 L18.7,67.5 L18.7,32.5 Z"/>
+    <path class="wave" d="M18.7,50 C18.7,50 29.1,32 42.5,45 C55.9,58 70.9,68 81.3,50 L81.3,56 C70.9,74 55.9,64 42.5,51 C29.1,38 18.7,56 18.7,56 Z"/>
+  </symbol>
+</svg>
 
 <header class="nav">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="Makroflow">MAKRO<span>FLOW</span></a>
+    <a class="logo" href="#top" aria-label="Makroflow"><svg class="logo-mark" aria-hidden="true"><use href="#logo"/></svg><span>MAKRO<b>FLOW</b></span></a>
     <nav aria-label="Hlavní">
       <a href="#jak">Jak to funguje</a>
       <a href="#makrodex">Makrodex</a>
@@ -245,32 +299,37 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
 </header>
 
 <main id="top">
-<section class="hero">
-  <div class="wrap">
-    <div>
-      <h1>Každý krok probouzí <span class="hl">Makromona.</span></h1>
-      <p>Makroflow hlídá makra, kroky a tréninky. Za disciplínu dostaneš pixelový svět plný tvorů, úkolů a dovedností.</p>
-      <div class="ctas">
-        <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
-        <a class="btn ghost" href="#jak">Jak to funguje</a>
-      </div>
-    </div>
+<section class="hero" id="hero">
+  <div class="lay stars" aria-hidden="true"></div>
+  <img class="moon" src="a/moon.png" alt="" aria-hidden="true">
+  <div class="lay t-far" aria-hidden="true"></div>
+  <div class="lay fog" aria-hidden="true"></div>
+  <div class="lay t-mid" aria-hidden="true"></div>
+  <div class="lay t-near" aria-hidden="true"></div>
+  <div class="lay ground" aria-hidden="true"></div>
 
-    <div class="scene" aria-label="Makromoni v lese">
-      <div class="sleeper" id="gudwin" role="button" tabindex="0" aria-label="Gudwin spí. Klikni a vzbuď ho.">
-        <img src="a/m30.webp" alt="Gudwin" width="150" height="150">
-        <span class="bubble">!</span>
-      </div>
-      <div class="zz" aria-hidden="true" style="left:calc(8% + 112px);top:-92px"><span>Z</span><span>Z</span><span>z</span></div>
-      <img class="dub" src="a/npc_stary_dub.webp" alt="" aria-hidden="true">
-      <div class="bushbox" id="bush" role="button" tabindex="0" aria-label="Něco se skrývá v křoví">
-        <img class="peek" id="peek" src="a/m32.webp" alt="Makromon vykukuje z křoví">
-        <img class="bush" src="a/npc_bush.webp" alt="">
-      </div>
-      <div class="ground-run" aria-hidden="true"><img src="a/m07.webp" alt=""></div>
-      <i class="fly" style="left:20%;top:30%"></i><i class="fly" style="left:62%;top:22%;animation-delay:-2s"></i>
-      <i class="fly" style="left:44%;top:52%;animation-delay:-4s"></i><i class="fly" style="left:78%;top:46%;animation-delay:-1s"></i>
-      <i class="fly" style="left:30%;top:68%;animation-delay:-5s"></i>
+  <div class="stage">
+    <img class="bush-back" src="a/bush_b.png" alt="" aria-hidden="true">
+    <div class="sleeper" id="gudwin" role="button" tabindex="0" aria-label="Gudwin spí. Klikni a vzbuď ho.">
+      <img src="a/m30.webp" alt="Gudwin" width="150" height="150">
+      <div class="zz" aria-hidden="true"><span>Z</span><span>Z</span><span>z</span></div>
+      <span class="bubble" aria-hidden="true">!</span>
+    </div>
+    <div class="bushwrap" id="bush" aria-label="Keř, ve kterém se něco skrývá">
+      <div class="runner" id="runner"><span class="flip" id="flip"><img id="peek" src="a/m12.webp" alt="Makromon schovaný v keři"></span></div>
+      <img class="bush" id="bushimg" src="a/bush_a.png" alt="">
+    </div>
+    <i class="fly" style="left:58%;top:30%"></i><i class="fly" style="left:72%;top:22%;animation-delay:-2s"></i>
+    <i class="fly" style="left:84%;top:48%;animation-delay:-4s"></i><i class="fly" style="left:66%;top:56%;animation-delay:-1s"></i>
+    <i class="fly" style="left:38%;top:62%;animation-delay:-5s"></i><i class="fly" style="left:92%;top:30%;animation-delay:-3s"></i>
+  </div>
+
+  <div class="wrap hero-copy">
+    <h1>Každý krok probouzí <span class="hl">Makromona.</span></h1>
+    <p>Makroflow hlídá makra, kroky a tréninky. Za disciplínu dostaneš pixelový svět plný tvorů, úkolů a dovedností.</p>
+    <div class="ctas">
+      <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
+      <a class="btn ghost" href="#jak">Jak to funguje</a>
     </div>
   </div>
 </section>
@@ -323,7 +382,7 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
         <img src="a/forest.webp" alt="Mapa hvozdu ze hry" width="600" height="1200" loading="lazy">
         <img src="a/mountains.webp" alt="Mapa hor ze hry" width="688" height="1536" loading="lazy">
       </div>
-      <div class="walker"><img src="a/m04.webp" alt="Aqulin na cestě"></div>
+      <div class="walker"><img src="a/m12.webp" alt="Spirra na cestě"></div>
     </div>
   </div>
 </section>
@@ -349,8 +408,8 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
         <h3>Achievementy</h3>
         <p>Odznaky za streaky, makra i pitný režim. Bronz, stříbro, zlato, diamant.</p>
       </div>
-      <div class="cell c-dub reveal">
-        <img src="a/npc_stary_dub.webp" alt="" aria-hidden="true">
+      <div class="cell c-skill reveal">
+        <img src="a/m23.webp" alt="" aria-hidden="true">
         <h3>Dovednosti do levelu 50</h3>
         <p>Kácení, lov i chytání hmyzu. Každý level dá bod do stromu dovedností.</p>
       </div>
@@ -364,7 +423,11 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
 
 <section class="final">
   <div class="wrap">
-    <img src="a/m12.webp" alt="Spirra">
+    <div class="emblem" aria-hidden="true">
+      <svg><use href="#logo"/></svg>
+      <img src="a/m12.webp" alt="">
+      <img class="l" src="a/m07.webp" alt="">
+    </div>
     <h2>Tvůj Makromon už čeká.</h2>
     <p>Stáhni si Makroflow a pomoz mi dostat ho na Google Play pro všechny.</p>
     <a class="btn xl" href="https://play.google.com/store/apps/details?id=cz.uhk.macroflow" target="_blank" rel="noopener">Stáhnout z Google Play <span class="arr">▶</span></a>
@@ -375,7 +438,7 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
 <footer>
   <div class="wrap">
     <div>
-      <a class="logo" href="#top">MAKRO<span>FLOW</span></a><br>
+      <a class="logo" href="#top"><svg class="logo-mark" aria-hidden="true"><use href="#logo"/></svg><span>MAKRO<b>FLOW</b></span></a>
       <small>Diplomový projekt, Samuel Maťašovský. © 2026 Makroflow</small>
     </div>
     <nav aria-label="Patička">
@@ -417,17 +480,24 @@ dialog form button{font:1.6rem/1 var(--display);background:var(--accent);border:
 // Počet testerů: uprav, až se někdo přidá.
 const TESTERS = 4, NEEDED = 12;
 const MONS = [["01","Ignar"],["02","Ignaroc"],["03","Ignaroth"],["04","Aqulin"],["05","Aqulind"],["06","Aqulinox"],["07","Flori"],["08","Florind"],["09","Florindra"],["10","Umbex"],["11",""],["12","Spirra"],["13","Flamirra"],["14","Aquirra"],["15","Verdirra"],["16","Shadirra"],["17","Charmirra"],["18","Glacirra"],["19","Drakirra"],["20","Finlet"],["21","Serpfin"],["22","Mycit"],["23","Mydrus"],["24","Soulu"],["25","Soulex"],["26","Soulord"],["27","Phantil"],["28",""],["29",""],["30","Gudwin"],["31","Axlu"],["32","Mysnic"],["33",""],["34","Ignileo"],["35","Aquavulp"]];
+// Kterým směrem se sprite dívá (podle kresby). Jen ti, kdo jsou nakreslení z boku, umí běhat.
+const FACES_LEFT = ["01","02","03","07","10","22","23","32"];
+const FACES_RIGHT = ["08","12","13","14","15","16","17","18","35"];
+const SIDE = [...FACES_LEFT, ...FACES_RIGHT];
 const known = MONS.filter(m => m[1]);
 const src = id => `a/m${id}.webp`;
+const rnd = a => a[Math.random() * a.length | 0];
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// zrcadlit, aby se díval ve směru pohybu
+const mirrorFor = (id, goingRight) => goingRight ? FACES_LEFT.includes(id) : FACES_RIGHT.includes(id);
 
-// testeři: obsazená místa ukazují Makromony
+// testeři
 const slots = document.getElementById("slots");
 const pick = ["12","01","04","07","30","32","10","20","24","27","34","35"];
 for (let i = 0; i < NEEDED; i++) {
   const d = document.createElement("div");
   d.className = "slot" + (i < TESTERS ? " on" : "");
-  d.innerHTML = i < TESTERS ? `<img src="${src(pick[i])}" alt="" style="animation-delay:-${i*.3}s">` : "?";
+  d.innerHTML = i < TESTERS ? `<img src="${src(pick[i])}" alt="" style="animation-delay:-${i * .4}s">` : "?";
   slots.append(d);
 }
 document.getElementById("count").innerHTML = `<span class="hl">${TESTERS}</span> / ${NEEDED} testerů`;
@@ -443,28 +513,76 @@ dex.addEventListener("click", e => {
 });
 document.getElementById("dexinfo").textContent = `${known.length} ručně kreslených Makromonů čeká v divočině. Další přibývají s každou aktualizací.`;
 
-// průvod Makromonů
+// průvod: každý kouká tam, kam jde
 const parade = document.getElementById("parade");
 if (!reduce) {
-  [...known].sort(() => Math.random() - .5).slice(0, 9).forEach(([id], i) => {
+  [...SIDE].sort(() => Math.random() - .5).slice(0, 8).forEach((id, i) => {
+    const right = i % 3 !== 2;
     const r = document.createElement("div");
-    r.className = "r" + (i % 3 === 2 ? " back" : "");
-    r.style.cssText = `--d:${14 + Math.random() * 10}s;--del:-${Math.random() * 22}s;width:${70 + Math.random() * 40}px;bottom:${22 + Math.random() * 10}%`;
-    r.innerHTML = `<img src="${src(id)}" alt="">`;
+    r.className = "r";
+    const d = 15 + Math.random() * 9;
+    r.style.cssText = `--dir:${right ? "goright" : "goleft"};--d:${d}s;--del:-${(i / 8) * d + Math.random() * 2}s;--w:${74 + Math.random() * 34}px;--g:${.3 + Math.random() * .14}s`;
+    r.innerHTML = `<span class="f${mirrorFor(id, right) ? " mirror" : ""}"><img src="${src(id)}" alt=""></span>`;
     parade.append(r);
   });
 }
 
-// křoví: každé vykouknutí jiný Makromon, kliknutím ho vyplašíš
-const peek = document.getElementById("peek"), bush = document.getElementById("bush");
-peek.addEventListener("animationiteration", () => { peek.src = src(known[Math.random() * known.length | 0][0]); });
-const scare = () => {
-  if (bush.classList.contains("out")) return;
-  bush.classList.add("out");
-  setTimeout(() => { bush.classList.remove("out"); peek.src = src(known[Math.random() * known.length | 0][0]); }, 1600);
-};
-bush.addEventListener("click", scare);
-bush.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), scare()));
+// keř: scroll ho rozšustí, dál scrollu z něj Makromon vyskočí a uteče
+const hero = document.getElementById("hero"), bushwrap = document.getElementById("bush");
+const runner = document.getElementById("runner"), flip = document.getElementById("flip"), peek = document.getElementById("peek");
+const bushimg = document.getElementById("bushimg");
+let bushState = "hidden", runAnims = [], dustTimer = 0;
+function hideNew() {
+  runAnims.forEach(a => a.cancel()); runAnims = []; clearInterval(dustTimer);
+  const id = rnd(SIDE);
+  peek.src = src(id); flip.style.transform = mirrorFor(id, true) ? "scaleX(-1)" : "";
+  runner.style.zIndex = 1; bushState = "hidden";
+}
+function puff(cls, x, y, dx, dy, life) {
+  const p = document.createElement("i"); p.className = cls;
+  p.style.left = x + "px"; p.style.top = y + "px"; hero.append(p);
+  p.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(.3)`, opacity: 0 }], { duration: life, easing: "ease-out" }).onfinish = () => p.remove();
+}
+function burst() {
+  bushState = "gone"; bushwrap.classList.remove("shake");
+  const hb = hero.getBoundingClientRect(), bb = bushwrap.getBoundingClientRect();
+  // lístky z keře
+  for (let i = 0; i < 9; i++) puff("leafbit", bb.left - hb.left + bb.width * (.25 + Math.random() * .5), bb.top - hb.top + bb.height * .3, (Math.random() - .5) * 160, -40 - Math.random() * 90, 700);
+  bushimg.animate([{ transform: "scale(1.08,.9)" }, { transform: "scale(.96,1.05)" }, { transform: "none" }], { duration: 420, easing: "ease-out" });
+  const jump = runner.animate([
+    { transform: "translate(0,35%)" },
+    { transform: "translate(18%,-95%)", offset: .5 },
+    { transform: "translate(36%,-6%)" }
+  ], { duration: 560, easing: "cubic-bezier(.25,.7,.45,1)", fill: "forwards" });
+  setTimeout(() => runner.style.zIndex = 3, 230);
+  runAnims.push(jump);
+  jump.finished.then(() => {
+    if (bushState !== "gone") return;
+    peek.animate([{ transform: "scale(1.18,.8)" }, { transform: "none" }], { duration: 170, easing: "ease-out" });
+    const dist = innerWidth - bb.left + 260;
+    const run = runner.animate([{ transform: "translate(36%,-6%)" }, { transform: `translate(${dist}px,-6%)` }], { duration: 1500, easing: "cubic-bezier(.45,0,.85,.55)", fill: "forwards", delay: 160 });
+    const gait = peek.animate([
+      { transform: "translateY(0) rotate(0) scale(1.06,.94)" },
+      { transform: "translateY(-22%) rotate(-7deg) scale(.95,1.05)", offset: .45 },
+      { transform: "translateY(0) rotate(0) scale(1.06,.94)" }
+    ], { duration: 240, iterations: Infinity, delay: 160 });
+    runAnims.push(run, gait);
+    dustTimer = setInterval(() => {
+      const rb = runner.getBoundingClientRect();
+      puff("dust", rb.left - hb.left + rb.width * .3, rb.bottom - hero.getBoundingClientRect().top - 10, -30 - Math.random() * 20, -14 - Math.random() * 12, 520);
+    }, 110);
+    run.finished.then(() => { clearInterval(dustTimer); gait.cancel(); });
+  });
+}
+hideNew();
+if (!reduce) {
+  new IntersectionObserver(([e]) => {
+    const r = e.intersectionRatio;
+    if (r >= .985) { if (bushState === "gone") hideNew(); bushwrap.classList.remove("shake"); }
+    else if (r >= .8) { if (bushState === "hidden") bushwrap.classList.add("shake"); }
+    else if (bushState === "hidden") burst();
+  }, { threshold: [0, .3, .5, .6, .7, .75, .8, .85, .9, .95, .985, 1] }).observe(hero);
+}
 
 // Gudwin spí, kliknutím ho vzbudíš
 const gud = document.getElementById("gudwin");
@@ -479,7 +597,6 @@ gud.addEventListener("keydown", e => (e.key === "Enter" || e.key === " ") && (e.
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add("in"), io.unobserve(e.target))), { threshold: .15 });
 document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 6) * 40 + "ms"; io.observe(el); });
 
-// právní dialog
 document.querySelector("[data-open=legal]").addEventListener("click", () => document.getElementById("legal").showModal());
 </script>
 </body>
